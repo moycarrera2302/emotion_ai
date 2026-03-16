@@ -1,12 +1,28 @@
+import { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useEmotion } from '../context/EmotionContext';
 import { useReveal } from '../hooks/useReveal';
-import { ARTISTS } from '../utils/emotionArt';
+import { generateEmotionArt, ARTISTS } from '../utils/emotionArt';
+import type { EmotionFrame, EmotionDistribution, EmotionLabel } from '../types/emotions';
+function makeDemoFrames(): EmotionFrame[] {
+  const emotions: EmotionLabel[] = ['joy', 'sadness', 'surprise', 'anger', 'neutral', 'fear', 'joy', 'neutral', 'joy', 'surprise'];
+  return emotions.map((e, i) => {
+    const dist: EmotionDistribution = { joy: 0.05, sadness: 0.05, anger: 0.05, fear: 0.05, surprise: 0.05, disgust: 0.05, neutral: 0.05 };
+    dist[e] = 0.65;
+    return {
+      timestamp: new Date(Date.now() - (emotions.length - i) * 2000).toISOString(),
+      session_id: 'demo', frame_number: i, dominant_emotion: e, confidence: 0.75,
+      emotion_distribution: dist,
+      dimensional_model: { valence: 0.3, arousal: 0.3, dominance: 0.3 },
+      visual: { dominant: e, confidence: 0.75, active_AUs: [], face_detected: true, expressivity_index: 0.6 },
+      flags: { micro_expression_detected: false, mixed_signals: false, stress_level: 0.2, emotional_shift: false },
+    };
+  });
+}
+
 export function HomePage() {
   const { start } = useEmotion();
   useReveal();
-
-  // Hero art is now in a static gradient for faster load
 
   return (
     <div>
@@ -402,6 +418,19 @@ function EmotionOrb({ color }: { color: string }) {
 
 
 function ArtistCard({ artist }: { artist: import('../utils/emotionArt').ArtistStyle }) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const c = canvasRef.current;
+    if (!c) return;
+    // Generate art once, statically
+    c.width = 320;
+    c.height = 200;
+    const { canvas: art } = generateEmotionArt(makeDemoFrames(), 320, 200, artist);
+    const ctx = c.getContext('2d');
+    if (ctx) ctx.drawImage(art, 0, 0);
+  }, [artist]);
+
   return (
     <div style={{
       background: '#FDFBF8', borderRadius: 14, overflow: 'hidden',
@@ -410,28 +439,21 @@ function ArtistCard({ artist }: { artist: import('../utils/emotionArt').ArtistSt
       onMouseEnter={e => (e.currentTarget.style.boxShadow = '0 8px 28px rgba(44,42,38,0.10)')}
       onMouseLeave={e => (e.currentTarget.style.boxShadow = 'none')}
     >
-      <div style={{
-        width: '100%', height: 140, display: 'block',
-        background: `linear-gradient(135deg, ${artist.bgColors[0]}, ${artist.bgColors[1]})`,
-        position: 'relative',
-      }}>
-        <div style={{
-          position: 'absolute', inset: 0,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: 48, opacity: 0.3,
-        }}>
-          🎨
-        </div>
-      </div>
-      <div style={{ padding: '12px 16px' }}>
+      <canvas
+        ref={canvasRef}
+        style={{
+          width: '100%', height: 140, display: 'block',
+        }}
+      />
+      <div style={{ padding: '14px 16px', background: '#FDFBF8' }}>
         <div style={{
           fontFamily: "'Playfair Display', Georgia, serif",
-          fontSize: 15, fontWeight: 700, color: '#2C2A26', marginBottom: 4,
+          fontSize: 16, fontWeight: 700, color: '#2C2A26', marginBottom: 6,
         }}>
           {artist.fullName}
         </div>
-        <div style={{ fontSize: 11, color: '#A8A08E', lineHeight: 1.5 }}>
-          {artist.prompt}
+        <div style={{ fontSize: 11, color: '#7A756B', lineHeight: 1.6 }}>
+          <em>{artist.prompt}</em>
         </div>
       </div>
     </div>
