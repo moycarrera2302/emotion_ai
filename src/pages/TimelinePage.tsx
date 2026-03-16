@@ -71,6 +71,31 @@ export function TimelinePage() {
 
   return (
     <div style={{ maxWidth: 1000, margin: '0 auto', padding: '28px 24px' }}>
+      {/* Artist reminder */}
+      {frames.length >= 3 && (
+        <a href="#art-section" style={{
+          display: 'flex', alignItems: 'center', gap: 12,
+          background: 'linear-gradient(135deg, #F8F5F0, #F0EDE5)',
+          border: '1px solid #E8E4DD', borderRadius: 12,
+          padding: '14px 20px', marginBottom: 20, textDecoration: 'none',
+          transition: 'border-color 0.2s',
+        }}
+          onMouseEnter={e => (e.currentTarget.style.borderColor = '#C4946A')}
+          onMouseLeave={e => (e.currentTarget.style.borderColor = '#E8E4DD')}
+        >
+          <span style={{ fontSize: 24 }}>🎨</span>
+          <div>
+            <span style={{ fontSize: 13, fontWeight: 600, color: '#2C2A26' }}>
+              Your emotional fingerprint is ready below
+            </span>
+            <span style={{ fontSize: 12, color: '#A8A08E', display: 'block', marginTop: 2 }}>
+              Scroll down to choose your favorite Impressionist master and download your art
+            </span>
+          </div>
+          <span style={{ marginLeft: 'auto', fontSize: 14, color: '#C4946A' }}>&darr;</span>
+        </a>
+      )}
+
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
         <div>
           <h1 style={pageTitle}>Timeline</h1>
@@ -198,7 +223,7 @@ export function TimelinePage() {
           )}
 
           {/* Emotion art preview */}
-          {frames.length >= 3 && <EmotionArtPreview frames={frames} selected={selectedArtist} onSelect={setSelectedArtist} />}
+          {frames.length >= 3 && <div id="art-section"><EmotionArtPreview frames={frames} selected={selectedArtist} onSelect={setSelectedArtist} /></div>}
         </div>
       )}
     </div>

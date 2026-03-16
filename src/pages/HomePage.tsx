@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useEmotion } from '../context/EmotionContext';
 import { useReveal } from '../hooks/useReveal';
-import { generateEmotionArt } from '../utils/emotionArt';
+import { generateEmotionArt, ARTISTS } from '../utils/emotionArt';
 import type { EmotionFrame, EmotionDistribution, EmotionLabel } from '../types/emotions';
 
 // Generate demo frames for the hero art
@@ -243,6 +243,45 @@ export function HomePage() {
         </div>
       </section>
 
+      {/* ── Impressionist masters showcase ────────────────────────────────── */}
+      <section style={{ padding: '100px 24px', background: '#F8F5F0' }}>
+        <div style={{ maxWidth: 1000, margin: '0 auto' }}>
+          <p className="reveal" style={sectionTag}>Inspired by the masters</p>
+          <h2 className="reveal" style={{
+            fontFamily: "'Playfair Display', serif", fontSize: 36, fontWeight: 700,
+            color: '#2C2A26', lineHeight: 1.3, marginBottom: 12, textAlign: 'center',
+          }}>
+            Nine Impressionist styles,<br />one emotional canvas
+          </h2>
+          <p className="reveal" style={{
+            fontSize: 16, color: '#7A756B', lineHeight: 1.7, textAlign: 'center',
+            maxWidth: 600, margin: '0 auto 48px',
+          }}>
+            After your session, choose any of these legendary painters
+            to transform your emotions into a unique work of art in their style.
+          </p>
+
+          <div className="reveal" style={{
+            display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16,
+          }}>
+            {ARTISTS.map(a => (
+              <ArtistCard key={a.name} artist={a} />
+            ))}
+          </div>
+
+          <div className="reveal" style={{ textAlign: 'center', marginTop: 40 }}>
+            <Link to="/visual" style={{
+              display: 'inline-flex', alignItems: 'center', gap: 8,
+              background: '#2C2A26', color: '#FDFBF8',
+              padding: '14px 32px', borderRadius: 50, fontSize: 14, fontWeight: 600,
+              textDecoration: 'none', boxShadow: '0 4px 20px rgba(44,42,38,0.15)',
+            }}>
+              Start a session &amp; create yours
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* ── Emotion tracking ──────────────────────────────────────────────── */}
       <section style={{ padding: '100px 24px 120px', background: '#2C2A26' }}>
         <div style={{ maxWidth: 900, margin: '0 auto', textAlign: 'center' }}>
@@ -421,6 +460,42 @@ function HeroArtDemo() {
       border: '1px solid #E8E4DD',
     }}>
       <canvas ref={canvasRef} style={{ width: '100%', height: 360, display: 'block' }} />
+    </div>
+  );
+}
+
+function ArtistCard({ artist }: { artist: import('../utils/emotionArt').ArtistStyle }) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  useEffect(() => {
+    const c = canvasRef.current;
+    if (!c) return;
+    c.width = 320;
+    c.height = 200;
+    const { canvas: art } = generateEmotionArt(makeDemoFrames(), 320, 200, artist);
+    const ctx = c.getContext('2d');
+    if (ctx) ctx.drawImage(art, 0, 0);
+  }, [artist]);
+
+  return (
+    <div style={{
+      background: '#FDFBF8', borderRadius: 14, overflow: 'hidden',
+      border: '1px solid #E8E4DD', transition: 'box-shadow 0.3s',
+    }}
+      onMouseEnter={e => (e.currentTarget.style.boxShadow = '0 8px 28px rgba(44,42,38,0.10)')}
+      onMouseLeave={e => (e.currentTarget.style.boxShadow = 'none')}
+    >
+      <canvas ref={canvasRef} style={{ width: '100%', height: 140, display: 'block' }} />
+      <div style={{ padding: '12px 16px' }}>
+        <div style={{
+          fontFamily: "'Playfair Display', Georgia, serif",
+          fontSize: 15, fontWeight: 700, color: '#2C2A26', marginBottom: 4,
+        }}>
+          {artist.fullName}
+        </div>
+        <div style={{ fontSize: 11, color: '#A8A08E', lineHeight: 1.5 }}>
+          {artist.prompt}
+        </div>
+      </div>
     </div>
   );
 }
