@@ -24,20 +24,9 @@ function makeDemoFrames(): EmotionFrame[] {
 
 export function HomePage() {
   const { start } = useEmotion();
-  const heroCanvasRef = useRef<HTMLCanvasElement>(null);
   useReveal();
 
-  // Render hero art on mount
-  useEffect(() => {
-    const canvas = heroCanvasRef.current;
-    if (!canvas) return;
-    const dpr = Math.min(window.devicePixelRatio, 2);
-    canvas.width = canvas.clientWidth * dpr;
-    canvas.height = canvas.clientHeight * dpr;
-    const { canvas: art } = generateEmotionArt(makeDemoFrames(), canvas.width, canvas.height);
-    const ctx = canvas.getContext('2d');
-    if (ctx) ctx.drawImage(art, 0, 0);
-  }, []);
+  // Hero art is now in a static gradient for faster load
 
   return (
     <div>
@@ -47,14 +36,7 @@ export function HomePage() {
         flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
         overflow: 'hidden',
       }}>
-        {/* Art background */}
-        <canvas
-          ref={heroCanvasRef}
-          style={{
-            position: 'absolute', inset: 0, width: '100%', height: '100%',
-            opacity: 0.35, zIndex: 0,
-          }}
-        />
+        {/* Gradient background */}
         <div style={{
           position: 'absolute', inset: 0, zIndex: 1,
           background: 'linear-gradient(180deg, rgba(253,251,248,0.6) 0%, rgba(253,251,248,0.2) 40%, rgba(253,251,248,0.7) 100%)',
@@ -64,7 +46,7 @@ export function HomePage() {
           <p style={{
             fontFamily: "'Inter'", fontSize: 13, fontWeight: 500, letterSpacing: 3,
             textTransform: 'uppercase', color: '#C4946A', marginBottom: 24,
-            animation: 'fadeIn 1.2s ease-out',
+            animation: 'fadeIn 0.5s ease-out',
           }}>
             Discover what your face reveals
           </p>
@@ -76,7 +58,7 @@ export function HomePage() {
             lineHeight: 1.05,
             color: '#2C2A26',
             marginBottom: 28,
-            animation: 'fadeInUp 1s ease-out 0.2s both',
+            animation: 'fadeInUp 0.5s ease-out',
           }}>
             Your emotions,<br />
             <span style={{
@@ -94,7 +76,7 @@ export function HomePage() {
           <p style={{
             fontFamily: "'Inter'", fontSize: 18, fontWeight: 300, lineHeight: 1.7,
             color: '#5A5650', maxWidth: 560, margin: '0 auto 16px',
-            animation: 'fadeInUp 1s ease-out 0.4s both',
+            animation: 'fadeInUp 0.5s ease-out',
           }}>
             Let your face tell its story. Smile, frown, wonder, rage — express
             yourself freely to the camera and watch your emotions become a living painting.
@@ -102,12 +84,12 @@ export function HomePage() {
           <p style={{
             fontFamily: "'Inter'", fontSize: 14, fontWeight: 400, lineHeight: 1.6,
             color: '#A8A08E', maxWidth: 440, margin: '0 auto 40px',
-            animation: 'fadeInUp 1s ease-out 0.5s both',
+            animation: 'fadeInUp 0.5s ease-out',
           }}>
             Everything stays on your device. Nothing is recorded. This is your safe space.
           </p>
 
-          <div style={{ display: 'flex', gap: 16, justifyContent: 'center', animation: 'fadeInUp 1s ease-out 0.6s both' }}>
+          <div style={{ display: 'flex', gap: 16, justifyContent: 'center', animation: 'fadeInUp 0.5s ease-out' }}>
             <Link to="/visual" onClick={start} style={{
               display: 'inline-flex', alignItems: 'center', gap: 8,
               background: '#2C2A26', color: '#FDFBF8',
@@ -167,8 +149,8 @@ export function HomePage() {
                 color: '#C4614E',
                 detail: 'Flow fields · Plutchik palette · PDF report',
               },
-            ].map(({ num, title, body, color, detail }, i) => (
-              <div key={num} className="reveal" style={{ transitionDelay: `${i * 0.15}s` }}>
+            ].map(({ num, title, body, color, detail }) => (
+              <div key={num} className="reveal" style={{ transitionDelay: '0s' }}>
                 <div style={{
                   fontSize: 48, fontFamily: "'Playfair Display', serif",
                   fontWeight: 800, color: `${color}30`, marginBottom: 12,
@@ -455,17 +437,6 @@ function HeroArtDemo() {
 }
 
 function ArtistCard({ artist }: { artist: import('../utils/emotionArt').ArtistStyle }) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  useEffect(() => {
-    const c = canvasRef.current;
-    if (!c) return;
-    c.width = 320;
-    c.height = 200;
-    const { canvas: art } = generateEmotionArt(makeDemoFrames(), 320, 200, artist);
-    const ctx = c.getContext('2d');
-    if (ctx) ctx.drawImage(art, 0, 0);
-  }, [artist]);
-
   return (
     <div style={{
       background: '#FDFBF8', borderRadius: 14, overflow: 'hidden',
@@ -474,7 +445,10 @@ function ArtistCard({ artist }: { artist: import('../utils/emotionArt').ArtistSt
       onMouseEnter={e => (e.currentTarget.style.boxShadow = '0 8px 28px rgba(44,42,38,0.10)')}
       onMouseLeave={e => (e.currentTarget.style.boxShadow = 'none')}
     >
-      <canvas ref={canvasRef} style={{ width: '100%', height: 140, display: 'block' }} />
+      <div style={{
+        width: '100%', height: 140, display: 'block',
+        background: `linear-gradient(135deg, ${artist.bgColors[0]}, ${artist.bgColors[1]})`,
+      }} />
       <div style={{ padding: '12px 16px' }}>
         <div style={{
           fontFamily: "'Playfair Display', Georgia, serif",
