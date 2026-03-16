@@ -153,22 +153,16 @@ export function HomePage() {
           <p className="reveal" style={sectionTag}>How it works</p>
           <h2 className="reveal" style={sectionTitle}>Three layers of emotional intelligence</h2>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 32, marginTop: 56 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 32, marginTop: 56 }}>
             {[
               {
                 num: '01', title: 'See',
                 body: 'Your camera captures facial micro-expressions. Our AI reads 68 landmark points and maps them to Ekman\'s 7 universal emotions using the Facial Action Coding System.',
                 color: '#E8B931',
-                detail: 'FACS · AU coding · 68-point mesh · 2 FPS precision',
+                detail: 'FACS · AU coding · 68-point mesh · 4 FPS precision',
               },
               {
-                num: '02', title: 'Listen',
-                body: 'Your microphone analyzes voice prosody — pitch, energy, speech rate, and spectral patterns that reveal emotional states words alone can\'t express.',
-                color: '#6B8DAE',
-                detail: 'Pitch · Energy · ZCR · Spectral centroid',
-              },
-              {
-                num: '03', title: 'Create',
+                num: '02', title: 'Create',
                 body: 'Your emotional data becomes a generative painting. Joy rises as warm gold, sadness flows as cool blue, anger bursts in crimson — your unique emotional fingerprint.',
                 color: '#C4614E',
                 detail: 'Flow fields · Plutchik palette · PDF report',
@@ -298,10 +292,9 @@ export function HomePage() {
             but for what you feel.
           </p>
 
-          <div className="reveal" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 20 }}>
+          <div className="reveal" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
             {[
               { icon: '📷', title: 'Face Tracking', desc: '68 landmarks, 7 emotions, FACS coding' },
-              { icon: '🎤', title: 'Voice Analysis', desc: 'Pitch, energy, spectral features' },
               { icon: '📊', title: 'Live Timeline', desc: 'Valence, arousal, stress in real-time' },
               { icon: '🎨', title: 'Art Export', desc: 'PDF with your emotional fingerprint' },
             ].map(({ icon, title, desc }) => (
