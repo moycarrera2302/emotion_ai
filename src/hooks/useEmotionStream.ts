@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import type { Session, SessionStatus, MindfulnessPrompt } from '../types/emotions';
+import type { Session, SessionStatus, MindfulnessPrompt, EmotionFrame } from '../types/emotions';
 import { generateEmotionFrame, generateSessionId, resetSimulator } from '../utils/simulator';
 
 const SAMPLE_INTERVAL_MS = 2000;
 const NEGATIVE_VALENCE_THRESHOLD = 0.35;
-const NEGATIVE_STREAK_TRIGGER = 5; // ~10 seconds at 2s interval = roughly 3 min scaled for demo
+const NEGATIVE_STREAK_TRIGGER = 5;
 
 export function useEmotionStream() {
   const [session, setSession] = useState<Session>(() => ({
@@ -22,10 +22,39 @@ export function useEmotionStream() {
     post_valence: null,
   });
 
+  const [simulationMode, setSimulationMode] = useState(false);
+
   const negativeStreakRef = useRef(0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const latestFrame = session.frames.length > 0 ? session.frames[session.frames.length - 1] : null;
+
+  // Shared frame processor — called by both simulator and camera
+  const processFrame = useCallback((frame: EmotionFrame) => {
+    setSession(prev => ({
+      ...prev,
+      frames: [...prev.frames, frame],
+    }));
+
+    if (frame.dimensional_model.valence < NEGATIVE_VALENCE_THRESHOLD) {
+      negativeStreakRef.current++;
+    } else {
+      negativeStreakRef.current = Math.max(0, negativeStreakRef.current - 1);
+    }
+
+    if (negativeStreakRef.current >= NEGATIVE_STREAK_TRIGGER) {
+      setMindfulness(prev => {
+        if (prev.active) return prev;
+        return {
+          active: true,
+          exercise: null,
+          pre_valence: frame.dimensional_model.valence,
+          post_valence: null,
+        };
+      });
+      negativeStreakRef.current = 0;
+    }
+  }, []);
 
   const start = useCallback(() => {
     if (session.status === 'active') return;
@@ -68,8 +97,9 @@ export function useEmotionStream() {
     negativeStreakRef.current = 0;
   }, [latestFrame]);
 
+  // Simulation interval — only active in simulation mode
   useEffect(() => {
-    if (session.status !== 'active') {
+    if (session.status !== 'active' || !simulationMode) {
       if (intervalRef.current) clearInterval(intervalRef.current);
       intervalRef.current = null;
       return;
@@ -77,37 +107,22 @@ export function useEmotionStream() {
 
     intervalRef.current = setInterval(() => {
       const frame = generateEmotionFrame(session.id);
-      setSession(prev => ({
-        ...prev,
-        frames: [...prev.frames, frame],
-      }));
-
-      if (frame.dimensional_model.valence < NEGATIVE_VALENCE_THRESHOLD) {
-        negativeStreakRef.current++;
-      } else {
-        negativeStreakRef.current = Math.max(0, negativeStreakRef.current - 1);
-      }
-
-      if (negativeStreakRef.current >= NEGATIVE_STREAK_TRIGGER && !mindfulness.active) {
-        setMindfulness({
-          active: true,
-          exercise: null,
-          pre_valence: frame.dimensional_model.valence,
-          post_valence: null,
-        });
-      }
+      processFrame(frame);
     }, SAMPLE_INTERVAL_MS);
 
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, [session.status, session.id, mindfulness.active]);
+  }, [session.status, session.id, simulationMode, processFrame]);
 
   return {
     session,
     latestFrame,
     mindfulness,
     setMindfulness,
+    simulationMode,
+    setSimulationMode,
+    processFrame,
     start,
     pause,
     stop,
