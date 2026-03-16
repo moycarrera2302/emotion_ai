@@ -4,8 +4,7 @@ import { EMOTION_COLORS } from '../utils/colors';
 
 const LINKS = [
   { to: '/', label: 'Home', exact: true },
-  { to: '/visual', label: 'Visual' },
-  { to: '/audio', label: 'Audio' },
+  { to: '/visual', label: 'Camera' },
   { to: '/mindfulness', label: 'Mindfulness' },
   { to: '/timeline', label: 'Timeline' },
 ];

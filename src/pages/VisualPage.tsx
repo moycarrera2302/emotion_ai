@@ -1,14 +1,14 @@
 import { useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import { useEmotion } from '../context/EmotionContext';
 import { useFaceDetection } from '../hooks/useFaceDetection';
-import { EmotionDashboard } from '../components/EmotionDashboard';
-import { EmotionChart } from '../components/EmotionChart';
-import { THEME, EMOTION_COLORS } from '../utils/colors';
-import type { EmotionFrame } from '../types/emotions';
+import { EMOTION_COLORS } from '../utils/colors';
+import type { EmotionFrame, EmotionLabel } from '../types/emotions';
 
 export function VisualPage() {
   const { session, latestFrame, processFrame } = useEmotion();
   const sessionActive = session.status === 'active';
+  const sessionDone = session.status === 'completed';
 
   const handleFrame = useCallback((frame: EmotionFrame) => {
     if (sessionActive) processFrame(frame);
@@ -22,155 +22,307 @@ export function VisualPage() {
 
   const isLive = status === 'active';
   const isLoading = status === 'loading-models' || status === 'requesting-camera';
+  const dist = latestFrame?.emotion_distribution;
 
   return (
-    <div style={{ maxWidth: 1100, margin: '0 auto', padding: '28px 24px' }}>
-      <h1 style={pageTitle}>Visual Analysis</h1>
-      <p style={pageSubtitle}>Facial expression recognition using FACS Action Units with real-time face mesh vectorization</p>
+    <div style={{ maxWidth: 1100, margin: '0 auto', padding: '32px 24px 80px' }}>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 360px', gap: 20, alignItems: 'start' }}>
-        {/* Left: dashboard + chart */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-          <EmotionDashboard frame={latestFrame} />
-          <EmotionChart distribution={latestFrame?.emotion_distribution ?? null} />
+      {/* ── Session complete banner ────────────────────────────────────── */}
+      {sessionDone && session.frames.length > 0 && (
+        <div style={{
+          background: 'linear-gradient(135deg, #F8F5F0, #F0EDE5)',
+          borderRadius: 16, padding: '32px 36px', marginBottom: 28,
+          border: '1px solid #E8E4DD',
+          textAlign: 'center',
+        }}>
+          <h2 style={{
+            fontFamily: "'Playfair Display', serif", fontSize: 26, fontWeight: 700,
+            color: '#2C2A26', marginBottom: 8,
+          }}>
+            Your session is ready
+          </h2>
+          <p style={{ fontSize: 15, color: '#7A756B', marginBottom: 24, lineHeight: 1.6 }}>
+            {session.frames.length} moments captured. Your emotional fingerprint has been created.
+            <br />Head to the Timeline to explore your data and download your art.
+          </p>
+          <Link to="/timeline" style={{
+            display: 'inline-flex', alignItems: 'center', gap: 8,
+            background: '#2C2A26', color: '#FDFBF8',
+            padding: '14px 32px', borderRadius: 50, fontSize: 14, fontWeight: 600,
+            textDecoration: 'none', boxShadow: '0 4px 16px rgba(44,42,38,0.15)',
+          }}>
+            View Timeline & Download &rarr;
+          </Link>
+        </div>
+      )}
 
-          {/* AU legend */}
-          {latestFrame?.modality_signals.visual.face_detected && (
-            <div style={card}>
-              <h3 style={sectionLabel}>Active Action Units (FACS)</h3>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                {latestFrame.modality_signals.visual.active_AUs.length > 0
-                  ? latestFrame.modality_signals.visual.active_AUs.map(au => (
-                      <span key={au} style={{
-                        background: `${EMOTION_COLORS[latestFrame.dominant_emotion]}18`,
-                        border: `1px solid ${EMOTION_COLORS[latestFrame.dominant_emotion]}40`,
-                        borderRadius: 6, padding: '3px 10px', fontSize: 12, fontWeight: 600,
-                        color: THEME.text,
-                      }}>{au}</span>
-                    ))
-                  : <span style={{ fontSize: 12, color: THEME.textMuted }}>No active AUs (neutral)</span>
-                }
+      {/* ── Main layout ───────────────────────────────────────────────── */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: 24, alignItems: 'start' }}>
+
+        {/* Left: Camera feed (main focus) */}
+        <div>
+          <div style={{
+            position: 'relative', width: '100%', aspectRatio: '4/3',
+            borderRadius: 20, overflow: 'hidden', background: '#111',
+            boxShadow: '0 20px 60px rgba(44,42,38,0.12)',
+            border: '1px solid #E8E4DD',
+          }}>
+            <video
+              ref={videoRef}
+              autoPlay muted playsInline
+              style={{ width: '100%', height: '100%', objectFit: 'cover', display: isLive ? 'block' : 'none', transform: 'scaleX(-1)' }}
+            />
+            <canvas
+              ref={canvasRef}
+              style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', transform: 'scaleX(-1)', pointerEvents: 'none', display: isLive ? 'block' : 'none' }}
+            />
+
+            {/* Overlay when not live */}
+            {!isLive && (
+              <div style={{
+                position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column',
+                alignItems: 'center', justifyContent: 'center', gap: 16,
+                background: 'linear-gradient(180deg, #1a1a1a 0%, #0d0d0d 100%)',
+              }}>
+                <div style={{
+                  width: 72, height: 72, borderRadius: '50%',
+                  background: 'rgba(255,255,255,0.06)',
+                  border: '2px solid rgba(255,255,255,0.12)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: 28,
+                }}>
+                  {status === 'error' ? '⚠️' : isLoading ? '⏳' : '📷'}
+                </div>
+                <div style={{ textAlign: 'center', maxWidth: 300 }}>
+                  <p style={{ fontSize: 15, color: '#ccc', marginBottom: 4 }}>
+                    {(status === 'loading-models' || status === 'idle') && 'Preparing face detection...'}
+                    {status === 'models-ready' && (sessionActive ? 'Camera ready' : 'Start a session to begin')}
+                    {status === 'requesting-camera' && 'Allow camera access in your browser'}
+                    {status === 'error' && (error ?? 'Camera error')}
+                  </p>
+                  {status === 'models-ready' && sessionActive && (
+                    <p style={{ fontSize: 12, color: '#888' }}>
+                      Feel free to express yourself — smile, reflect, let it all out.
+                    </p>
+                  )}
+                </div>
               </div>
-              <p style={{ margin: '10px 0 0', fontSize: 11, color: THEME.textMuted, lineHeight: 1.5 }}>
-                Based on Ekman & Friesen (1978) FACS Manual. Face mesh shows 68 tracked landmark points.
+            )}
+
+            {/* Live emotion pill overlay (top-left) */}
+            {isLive && latestFrame && (
+              <div style={{
+                position: 'absolute', top: 14, left: 14,
+                display: 'flex', alignItems: 'center', gap: 8,
+                background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(8px)',
+                borderRadius: 20, padding: '6px 14px',
+              }}>
+                <span style={{
+                  width: 7, height: 7, borderRadius: '50%',
+                  background: '#6BAE7A', animation: 'pulse 2s infinite',
+                }} />
+                <span style={{ fontSize: 12, fontWeight: 600, color: '#fff', textTransform: 'capitalize' }}>
+                  {latestFrame.dominant_emotion}
+                </span>
+                <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)' }}>
+                  {Math.round(latestFrame.confidence * 100)}%
+                </span>
+              </div>
+            )}
+
+            {/* Frame counter (bottom-right) */}
+            {isLive && (
+              <div style={{
+                position: 'absolute', bottom: 14, right: 14,
+                background: 'rgba(0,0,0,0.45)', borderRadius: 8, padding: '4px 10px',
+                fontSize: 11, color: 'rgba(255,255,255,0.5)',
+              }}>
+                {session.frames.length} frames
+              </div>
+            )}
+          </div>
+
+          {/* Camera controls */}
+          <div style={{ display: 'flex', gap: 10, marginTop: 16, justifyContent: 'center' }}>
+            {!isLive ? (
+              <button onClick={startCamera}
+                disabled={!sessionActive || isLoading || status !== 'models-ready'}
+                style={{
+                  background: (sessionActive && status === 'models-ready') ? '#2C2A26' : '#D4CFC7',
+                  color: (sessionActive && status === 'models-ready') ? '#FDFBF8' : '#A8A08E',
+                  border: 'none', borderRadius: 50, padding: '12px 32px',
+                  fontSize: 14, fontWeight: 600,
+                  cursor: (sessionActive && status === 'models-ready') ? 'pointer' : 'not-allowed',
+                }}>
+                {isLoading ? 'Loading models...' : 'Enable Camera'}
+              </button>
+            ) : (
+              <button onClick={stopCamera} style={{
+                background: 'transparent', color: '#7A756B',
+                border: '1px solid #D4CFC7', borderRadius: 50, padding: '12px 28px',
+                fontSize: 14, fontWeight: 500, cursor: 'pointer',
+              }}>
+                Disable Camera
+              </button>
+            )}
+          </div>
+
+          {/* Encouragement text */}
+          {isLive && (
+            <p style={{
+              textAlign: 'center', fontSize: 13, color: '#B0A99E', marginTop: 14,
+              fontStyle: 'italic', lineHeight: 1.5,
+            }}>
+              Let yourself feel. Smile, think, wonder — your face tells a story
+              only you can create. Every expression becomes part of your unique painting.
+            </p>
+          )}
+        </div>
+
+        {/* Right sidebar */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16, position: 'sticky', top: 80 }}>
+
+          {/* Emotion distribution bars */}
+          <div style={card}>
+            <h3 style={sectionLabel}>Emotion Reading</h3>
+            {dist ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {(Object.entries(dist) as [EmotionLabel, number][])
+                  .sort((a, b) => b[1] - a[1])
+                  .map(([emotion, value]) => (
+                    <div key={emotion}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}>
+                        <span style={{ fontSize: 12, color: '#5A5650', textTransform: 'capitalize' }}>{emotion}</span>
+                        <span style={{ fontSize: 11, fontWeight: 600, color: EMOTION_COLORS[emotion] }}>
+                          {Math.round(value * 100)}%
+                        </span>
+                      </div>
+                      <div style={{ height: 6, borderRadius: 3, background: '#F0EDE8', overflow: 'hidden' }}>
+                        <div style={{
+                          height: '100%', borderRadius: 3, width: `${value * 100}%`,
+                          background: EMOTION_COLORS[emotion],
+                          transition: 'width 0.5s ease',
+                        }} />
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            ) : (
+              <p style={{ fontSize: 13, color: '#B0A99E', textAlign: 'center', padding: '20px 0' }}>
+                Waiting for camera...
               </p>
+            )}
+          </div>
+
+          {/* Dimensions */}
+          {latestFrame && (
+            <div style={card}>
+              <h3 style={sectionLabel}>Dimensions</h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <DimBar label="Valence" value={latestFrame.dimensional_model.valence} />
+                <DimBar label="Arousal" value={latestFrame.dimensional_model.arousal} />
+                <DimBar label="Stress" value={latestFrame.flags.stress_level} isStress />
+              </div>
             </div>
           )}
 
-          {/* What defines each emotion */}
-          <div style={card}>
-            <h3 style={sectionLabel}>What Defines Each Emotion?</h3>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-              {EMOTION_GUIDE.map(({ emotion, color, face, body }) => (
-                <div key={emotion} style={{
-                  background: `${color}08`, border: `1px solid ${color}25`,
-                  borderRadius: 8, padding: '10px 12px',
-                }}>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: THEME.text, textTransform: 'capitalize', marginBottom: 4 }}>
-                    <span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', background: color, marginRight: 6 }} />
-                    {emotion}
-                  </div>
-                  <div style={{ fontSize: 11, color: THEME.textSecondary, lineHeight: 1.5 }}>
-                    <strong>Face:</strong> {face}
-                  </div>
-                  <div style={{ fontSize: 11, color: THEME.textSecondary, lineHeight: 1.5 }}>
-                    <strong>Key:</strong> {body}
-                  </div>
-                </div>
-              ))}
+          {/* Active AUs */}
+          {latestFrame?.modality_signals.visual.face_detected && (
+            <div style={card}>
+              <h3 style={sectionLabel}>Facial Action Units</h3>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 8 }}>
+                {latestFrame.modality_signals.visual.active_AUs.length > 0
+                  ? latestFrame.modality_signals.visual.active_AUs.map(au => (
+                    <span key={au} style={{
+                      background: `${EMOTION_COLORS[latestFrame.dominant_emotion]}15`,
+                      border: `1px solid ${EMOTION_COLORS[latestFrame.dominant_emotion]}30`,
+                      borderRadius: 6, padding: '3px 10px', fontSize: 11, fontWeight: 600,
+                      color: '#2C2A26',
+                    }}>{au}</span>
+                  ))
+                  : <span style={{ fontSize: 12, color: '#B0A99E' }}>Neutral — no strong AUs</span>
+                }
+              </div>
             </div>
-          </div>
-        </div>
-
-        {/* Right: camera feed */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 14, position: 'sticky', top: 80 }}>
-          <div style={card}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-              <h3 style={sectionLabel}>Camera Feed</h3>
-              <span style={{
-                display: 'flex', alignItems: 'center', gap: 5,
-                fontSize: 11, fontWeight: 600,
-                color: isLive ? THEME.positive : isLoading ? THEME.accent : THEME.textMuted,
-              }}>
-                {isLive && <span style={{ width: 6, height: 6, borderRadius: '50%', background: THEME.positive, animation: 'pulse 2s infinite' }} />}
-                {isLive ? 'Detecting' : isLoading ? 'Loading...' : status === 'models-ready' ? 'Ready' : status === 'error' ? 'Error' : 'Idle'}
-              </span>
-            </div>
-
-            <div style={{ position: 'relative', width: '100%', aspectRatio: '4/3', borderRadius: 8, overflow: 'hidden', background: '#111' }}>
-              <video
-                ref={videoRef}
-                autoPlay muted playsInline
-                style={{ width: '100%', height: '100%', objectFit: 'cover', display: isLive ? 'block' : 'none', transform: 'scaleX(-1)' }}
-              />
-              <canvas
-                ref={canvasRef}
-                style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', transform: 'scaleX(-1)', pointerEvents: 'none', display: isLive ? 'block' : 'none' }}
-              />
-              {!isLive && (
-                <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-                  <span style={{ fontSize: 32 }}>{status === 'error' ? '⚠️' : '📷'}</span>
-                  <span style={{ fontSize: 12, color: '#666', textAlign: 'center', padding: '0 16px' }}>
-                    {(status === 'loading-models' || status === 'idle') && 'Loading face detection models...'}
-                    {status === 'models-ready' && (sessionActive ? 'Click Enable Camera' : 'Start session first')}
-                    {status === 'requesting-camera' && 'Allow camera access in browser'}
-                    {status === 'error' && error}
-                  </span>
-                </div>
-              )}
-            </div>
-
-            <div style={{ marginTop: 12, display: 'flex', gap: 8 }}>
-              {!isLive
-                ? <button onClick={startCamera} disabled={!sessionActive || isLoading || status !== 'models-ready'}
-                    style={{ flex: 1, background: (sessionActive && status === 'models-ready') ? THEME.accent : THEME.borderLight, color: (sessionActive && status === 'models-ready') ? '#fff' : THEME.textMuted, border: 'none', borderRadius: 8, padding: '9px 0', fontSize: 12, fontWeight: 600, cursor: (sessionActive && status === 'models-ready') ? 'pointer' : 'not-allowed' }}>
-                    {isLoading ? 'Please wait...' : 'Enable Camera'}
-                  </button>
-                : <button onClick={stopCamera} style={{ flex: 1, background: THEME.bgHover, color: THEME.text, border: `1px solid ${THEME.border}`, borderRadius: 8, padding: '9px 0', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
-                    Disable Camera
-                  </button>
-              }
-            </div>
-          </div>
+          )}
 
           {/* Mesh legend */}
           <div style={{ ...card, padding: '14px 16px' }}>
-            <h3 style={{ ...sectionLabel, marginBottom: 8 }}>Face Mesh Legend</h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+            <h3 style={{ ...sectionLabel, marginBottom: 8, fontSize: 10 }}>Face Mesh</h3>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
               {[
-                { color: '#6BAE7A', label: 'Eyes (AU1-7 area)' },
-                { color: '#E8B931', label: 'Eyebrows (AU1,2,4)' },
-                { color: '#C4614E', label: 'Mouth / Lips (AU20-28)' },
+                { color: '#6BAE7A', label: 'Eyes' },
+                { color: '#E8B931', label: 'Brows' },
+                { color: '#C4614E', label: 'Mouth' },
                 { color: '#A8C4E0', label: 'Nose' },
-                { color: '#C4946A', label: 'Jaw line' },
+                { color: '#C4946A', label: 'Jaw' },
               ].map(({ color, label }) => (
-                <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <div style={{ width: 10, height: 2, background: color, borderRadius: 1 }} />
-                  <span style={{ fontSize: 11, color: THEME.textSecondary }}>{label}</span>
+                <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                  <div style={{ width: 8, height: 2, background: color, borderRadius: 1 }} />
+                  <span style={{ fontSize: 10, color: '#A8A08E' }}>{label}</span>
                 </div>
               ))}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'rgba(255,255,255,0.75)', border: '1px solid #666' }} />
-                <span style={{ fontSize: 11, color: THEME.textSecondary }}>68 landmark points</span>
-              </div>
             </div>
           </div>
+
+          {/* What am I seeing? */}
+          <details style={{ ...card, cursor: 'pointer' }}>
+            <summary style={{ ...sectionLabel, marginBottom: 0, cursor: 'pointer', userSelect: 'none' }}>
+              What does each emotion look like?
+            </summary>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 12 }}>
+              {EMOTION_GUIDE.map(({ emotion, color, face }) => (
+                <div key={emotion} style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
+                  <div style={{ width: 8, height: 8, borderRadius: '50%', background: color, marginTop: 4, flexShrink: 0 }} />
+                  <div>
+                    <span style={{ fontSize: 11, fontWeight: 600, color: '#2C2A26', textTransform: 'capitalize' }}>{emotion}: </span>
+                    <span style={{ fontSize: 11, color: '#7A756B' }}>{face}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </details>
         </div>
       </div>
     </div>
   );
 }
 
+function DimBar({ label, value, isStress }: { label: string; value: number; isStress?: boolean }) {
+  const normalized = isStress ? value : (value + 1) / 2;
+  const color = isStress
+    ? (value > 0.6 ? '#C4614E' : value > 0.3 ? '#C4946A' : '#6BAE7A')
+    : (value >= 0 ? '#6BAE7A' : '#C4614E');
+  return (
+    <div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}>
+        <span style={{ fontSize: 11, color: '#7A756B' }}>{label}</span>
+        <span style={{ fontSize: 11, fontWeight: 600, color }}>
+          {isStress ? `${Math.round(value * 100)}%` : `${value >= 0 ? '+' : ''}${value.toFixed(2)}`}
+        </span>
+      </div>
+      <div style={{ height: 4, borderRadius: 2, background: '#F0EDE8', overflow: 'hidden' }}>
+        <div style={{ height: '100%', borderRadius: 2, width: `${normalized * 100}%`, background: color, transition: 'width 0.5s ease' }} />
+      </div>
+    </div>
+  );
+}
+
 const EMOTION_GUIDE = [
-  { emotion: 'joy', color: '#E8B931', face: 'Raised cheeks (AU6), lip corners pulled up (AU12)', body: 'Crow\'s feet around eyes, teeth may show' },
-  { emotion: 'sadness', color: '#6B8DAE', face: 'Inner brow raise (AU1), brow lowerer (AU4), lip corner depressor (AU15)', body: 'Drooping eyelids, downcast gaze' },
-  { emotion: 'anger', color: '#C4614E', face: 'Brow lowerer (AU4), upper lid raiser (AU5), lid tightener (AU7), lip tightener (AU23)', body: 'Compressed lips, tense jaw, narrowed eyes' },
-  { emotion: 'fear', color: '#8B6BAE', face: 'Inner brow raise (AU1), outer brow raise (AU2), lip stretcher (AU20)', body: 'Wide eyes, tense mouth, frozen or pulled-back expression' },
-  { emotion: 'surprise', color: '#4EA88B', face: 'Inner + outer brow raise (AU1+2), upper lid raise (AU5), jaw drop (AU27)', body: 'Wide open eyes and mouth, raised eyebrows' },
-  { emotion: 'neutral', color: '#A8A08E', face: 'Relaxed muscles, no strong AU activation', body: 'Resting face — may look serious but isn\'t negative' },
+  { emotion: 'joy', color: '#E8B931', face: 'Raised cheeks, lip corners up (Duchenne smile)' },
+  { emotion: 'sadness', color: '#6B8DAE', face: 'Inner brow raise, lip corners down, drooping lids' },
+  { emotion: 'anger', color: '#C4614E', face: 'Brows lowered, lids tight, lips compressed' },
+  { emotion: 'fear', color: '#8B6BAE', face: 'Wide eyes, raised brows, tense mouth' },
+  { emotion: 'surprise', color: '#4EA88B', face: 'Wide open eyes and mouth, raised eyebrows' },
+  { emotion: 'neutral', color: '#A8A08E', face: 'Relaxed muscles, resting expression' },
 ];
 
-const pageTitle: React.CSSProperties = { margin: '0 0 6px', fontSize: 22, fontWeight: 700, color: THEME.text };
-const pageSubtitle: React.CSSProperties = { margin: '0 0 24px', fontSize: 13, color: THEME.textSecondary };
-const card: React.CSSProperties = { background: THEME.bgCard, borderRadius: 12, padding: 20, border: `1px solid ${THEME.border}`, boxShadow: THEME.shadow };
-const sectionLabel: React.CSSProperties = { margin: '0 0 12px', fontSize: 12, fontWeight: 600, color: THEME.textSecondary, textTransform: 'uppercase', letterSpacing: 1 };
+const card: React.CSSProperties = {
+  background: '#fff', borderRadius: 14, padding: 18,
+  border: '1px solid #E8E4DD', boxShadow: '0 1px 4px rgba(44,42,38,0.04)',
+};
+
+const sectionLabel: React.CSSProperties = {
+  margin: '0 0 10px', fontSize: 11, fontWeight: 600, color: '#A8A08E',
+  textTransform: 'uppercase', letterSpacing: 1.5,
+};

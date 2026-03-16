@@ -3,7 +3,7 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { useEmotion } from '../context/EmotionContext';
 import { EmotionBadge } from '../components/EmotionBadge';
 import { THEME, EMOTION_COLORS } from '../utils/colors';
-import { exportSessionPDF } from '../utils/pdfExport';
+import { exportFramedArt, exportAnalyticsPDF } from '../utils/artExport';
 import { renderEmotionArtToCanvas } from '../utils/emotionArt';
 import type { EmotionLabel } from '../types/emotions';
 
@@ -52,10 +52,16 @@ export function TimelinePage() {
     };
   }, [frames]);
 
-  const handleExport = async () => {
+  const handleArtDownload = () => {
     setExporting(true);
-    try { exportSessionPDF(session); }
-    finally { setTimeout(() => setExporting(false), 1000); }
+    try { exportFramedArt(frames, session.id); }
+    finally { setTimeout(() => setExporting(false), 800); }
+  };
+
+  const handleAnalyticsDownload = () => {
+    setExporting(true);
+    try { exportAnalyticsPDF(frames, session.id, session.notes); }
+    finally { setTimeout(() => setExporting(false), 800); }
   };
 
   const duration = frames.length * 2;
@@ -70,10 +76,31 @@ export function TimelinePage() {
           <p style={pageSubtitle}>Emotional trajectory · {frames.length} frames · {mins}m {secs.toString().padStart(2, '0')}s</p>
         </div>
         {frames.length > 0 && (
-          <button onClick={handleExport} disabled={exporting}
-            style={{ display: 'flex', alignItems: 'center', gap: 8, background: exporting ? THEME.borderLight : THEME.accent, color: exporting ? THEME.textMuted : '#fff', border: 'none', borderRadius: 10, padding: '11px 22px', fontSize: 13, fontWeight: 600, cursor: exporting ? 'not-allowed' : 'pointer', boxShadow: exporting ? 'none' : `0 2px 8px ${THEME.accent}40` }}>
-            {exporting ? 'Generating PDF...' : '⬇ Download PDF Report'}
-          </button>
+          <div style={{ display: 'flex', gap: 10 }}>
+            <button onClick={handleArtDownload} disabled={exporting}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 6,
+                background: exporting ? THEME.borderLight : '#2C2A26',
+                color: exporting ? THEME.textMuted : '#FDFBF8',
+                border: 'none', borderRadius: 50, padding: '11px 24px',
+                fontSize: 13, fontWeight: 600,
+                cursor: exporting ? 'not-allowed' : 'pointer',
+                boxShadow: exporting ? 'none' : '0 4px 16px rgba(44,42,38,0.15)',
+              }}>
+              🎨 Download Art
+            </button>
+            <button onClick={handleAnalyticsDownload} disabled={exporting}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 6,
+                background: 'transparent',
+                color: '#7A756B',
+                border: '1px solid #D4CFC7', borderRadius: 50, padding: '11px 24px',
+                fontSize: 13, fontWeight: 500,
+                cursor: exporting ? 'not-allowed' : 'pointer',
+              }}>
+              📊 Download Analytics
+            </button>
+          </div>
         )}
       </div>
 

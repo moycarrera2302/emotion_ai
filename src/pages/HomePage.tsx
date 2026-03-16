@@ -96,34 +96,30 @@ export function HomePage() {
 
           <p style={{
             fontFamily: "'Inter'", fontSize: 18, fontWeight: 300, lineHeight: 1.7,
-            color: '#5A5650', maxWidth: 540, margin: '0 auto 40px',
+            color: '#5A5650', maxWidth: 560, margin: '0 auto 16px',
             animation: 'fadeInUp 1s ease-out 0.4s both',
           }}>
-            Real-time facial expression tracking meets generative art.
-            See your inner world become a living painting — then download your
-            unique emotional fingerprint.
+            Let your face tell its story. Smile, frown, wonder, rage — express
+            yourself freely to the camera and watch your emotions become a living painting.
+          </p>
+          <p style={{
+            fontFamily: "'Inter'", fontSize: 14, fontWeight: 400, lineHeight: 1.6,
+            color: '#A8A08E', maxWidth: 440, margin: '0 auto 40px',
+            animation: 'fadeInUp 1s ease-out 0.5s both',
+          }}>
+            Everything stays on your device. Nothing is recorded. This is your safe space.
           </p>
 
           <div style={{ display: 'flex', gap: 16, justifyContent: 'center', animation: 'fadeInUp 1s ease-out 0.6s both' }}>
             <Link to="/visual" onClick={start} style={{
               display: 'inline-flex', alignItems: 'center', gap: 8,
               background: '#2C2A26', color: '#FDFBF8',
-              padding: '16px 36px', borderRadius: 50, fontSize: 15, fontWeight: 600,
+              padding: '16px 40px', borderRadius: 50, fontSize: 15, fontWeight: 600,
               textDecoration: 'none', letterSpacing: 0.3,
               boxShadow: '0 8px 32px rgba(44,42,38,0.2)',
-              transition: 'transform 0.3s, box-shadow 0.3s',
             }}>
-              Begin your journey
+              Open camera &rarr;
             </Link>
-            <a href="#how-it-works" style={{
-              display: 'inline-flex', alignItems: 'center', gap: 6,
-              background: 'transparent', color: '#7A756B',
-              padding: '16px 24px', borderRadius: 50, fontSize: 15, fontWeight: 500,
-              textDecoration: 'none', border: '1px solid #D4CFC7',
-              transition: 'all 0.3s',
-            }}>
-              Learn more
-            </a>
           </div>
         </div>
 
