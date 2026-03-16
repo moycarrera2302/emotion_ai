@@ -226,7 +226,7 @@ export function exportSessionPDF(session: Session) {
   // Generate the art canvas
   const artWidth = 1200;
   const artHeight = 900;
-  const artCanvas = generateEmotionArt(frames, artWidth, artHeight);
+  const { canvas: artCanvas, artist } = generateEmotionArt(frames, artWidth, artHeight);
   const artDataUrl = artCanvas.toDataURL('image/png');
 
   // Place art on page (full width with small margin)
@@ -242,7 +242,7 @@ export function exportSessionPDF(session: Session) {
   pdf.setTextColor(160, 154, 145);
   pdf.text('Each color and flow pattern represents a different emotion detected during your session.', W / 2, legendY, { align: 'center' });
   pdf.text('Joy rises (gold) · Sadness falls (blue) · Anger bursts (red) · Fear scatters (violet) · Surprise radiates (teal)', W / 2, legendY + 5, { align: 'center' });
-  pdf.text('The bottom ribbon shows your dominant emotion at each moment.', W / 2, legendY + 10, { align: 'center' });
+  pdf.text(`Inspired by the style of ${artist.fullName}`, W / 2, legendY + 10, { align: 'center' });
 
   // Footer on both pages
   [1, 2].forEach(pageNum => {

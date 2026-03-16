@@ -34,22 +34,25 @@ export function exportFramedArt(frames: EmotionFrame[], sessionId: string) {
   ctx.strokeRect(FRAME_PAD - 1, FRAME_PAD - 1, ART_W + 2, ART_H + 2);
 
   // Generate and draw art
-  const art = generateEmotionArt(frames, ART_W, ART_H);
-  ctx.drawImage(art, FRAME_PAD, FRAME_PAD);
+  const { canvas: artCanvas, artist } = generateEmotionArt(frames, ART_W, ART_H);
+  ctx.drawImage(artCanvas, FRAME_PAD, FRAME_PAD);
 
   // Bottom info bar
   const infoY = FRAME_PAD + ART_H + 24;
 
-  // Title
+  // Title + artist
   ctx.font = 'italic 18px Georgia, "Playfair Display", serif';
   ctx.fillStyle = '#2C2A26';
   ctx.textAlign = 'left';
   ctx.fillText('Emotional Fingerprint', FRAME_PAD, infoY);
+  ctx.font = '13px -apple-system, "Inter", sans-serif';
+  ctx.fillStyle = '#A8A08E';
+  ctx.fillText(`Inspired by ${artist.fullName}`, FRAME_PAD, infoY + 18);
 
   // Date
   ctx.font = '12px -apple-system, "Inter", sans-serif';
   ctx.fillStyle = '#B0A99E';
-  ctx.fillText(new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }), FRAME_PAD, infoY + 20);
+  ctx.fillText(new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }), FRAME_PAD, infoY + 34);
 
   // Emotion color palette dots
   const emotions = (Object.keys(EMOTION_PALETTE_FIRST) as EmotionLabel[]).filter(e => {
@@ -67,7 +70,7 @@ export function exportFramedArt(frames: EmotionFrame[], sessionId: string) {
   ctx.font = '10px -apple-system, "Inter", sans-serif';
   ctx.fillStyle = '#D4CFC7';
   ctx.textAlign = 'right';
-  ctx.fillText('EmotionsAI', TOTAL_W - FRAME_PAD, infoY + 20);
+  ctx.fillText('EmotionsAI', TOTAL_W - FRAME_PAD, infoY + 34);
 
   // Download as PNG
   const link = document.createElement('a');

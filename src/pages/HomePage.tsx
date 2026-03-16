@@ -37,7 +37,7 @@ export function HomePage() {
     const dpr = Math.min(window.devicePixelRatio, 2);
     canvas.width = canvas.clientWidth * dpr;
     canvas.height = canvas.clientHeight * dpr;
-    const art = generateEmotionArt(makeDemoFrames(), canvas.width, canvas.height);
+    const { canvas: art } = generateEmotionArt(makeDemoFrames(), canvas.width, canvas.height);
     const ctx = canvas.getContext('2d');
     if (ctx) ctx.drawImage(art, 0, 0);
   }, []);
@@ -410,7 +410,7 @@ function HeroArtDemo() {
     const dpr = Math.min(window.devicePixelRatio, 2);
     canvas.width = canvas.clientWidth * dpr;
     canvas.height = canvas.clientHeight * dpr;
-    const art = generateEmotionArt(makeDemoFrames(), canvas.width, canvas.height);
+    const { canvas: art } = generateEmotionArt(makeDemoFrames(), canvas.width, canvas.height);
     const ctx = canvas.getContext('2d');
     if (ctx) ctx.drawImage(art, 0, 0);
   }, []);

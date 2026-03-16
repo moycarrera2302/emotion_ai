@@ -207,20 +207,30 @@ export function TimelinePage() {
 function EmotionArtPreview({ frames }: { frames: import('../types/emotions').EmotionFrame[] }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [rendered, setRendered] = useState(false);
+  const [artistName, setArtistName] = useState('');
+  const [artistPrompt, setArtistPrompt] = useState('');
 
   useEffect(() => {
     if (!canvasRef.current || frames.length < 3) return;
-    renderEmotionArtToCanvas(canvasRef.current, frames);
+    const artist = renderEmotionArtToCanvas(canvasRef.current, frames);
+    setArtistName(artist.fullName);
+    setArtistPrompt(artist.prompt);
     setRendered(true);
   }, [frames.length]);
 
   return (
     <div style={card}>
       <h3 style={sectionLabel}>Emotional Fingerprint — Generative Art</h3>
-      <p style={{ fontSize: 12, color: THEME.textSecondary, marginBottom: 12, lineHeight: 1.5 }}>
-        A unique painting created from your session data. Joy rises as warm gold, sadness falls as cool blue,
-        anger bursts in red, fear scatters in violet, surprise radiates in teal. This artwork is included in your PDF export.
-      </p>
+      {artistName && (
+        <p style={{ fontSize: 14, color: THEME.text, marginBottom: 4, fontStyle: 'italic', fontFamily: "'Playfair Display', Georgia, serif" }}>
+          Inspired by <strong>{artistName}</strong>
+        </p>
+      )}
+      {artistPrompt && (
+        <p style={{ fontSize: 12, color: THEME.textMuted, marginBottom: 12, lineHeight: 1.5 }}>
+          {artistPrompt}
+        </p>
+      )}
       <div style={{ borderRadius: 10, overflow: 'hidden', border: `1px solid ${THEME.border}` }}>
         <canvas
           ref={canvasRef}
