@@ -56,6 +56,30 @@ export function VisualPage() {
               </p>
             </div>
           )}
+
+          {/* What defines each emotion */}
+          <div style={card}>
+            <h3 style={sectionLabel}>What Defines Each Emotion?</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+              {EMOTION_GUIDE.map(({ emotion, color, face, body }) => (
+                <div key={emotion} style={{
+                  background: `${color}08`, border: `1px solid ${color}25`,
+                  borderRadius: 8, padding: '10px 12px',
+                }}>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: THEME.text, textTransform: 'capitalize', marginBottom: 4 }}>
+                    <span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', background: color, marginRight: 6 }} />
+                    {emotion}
+                  </div>
+                  <div style={{ fontSize: 11, color: THEME.textSecondary, lineHeight: 1.5 }}>
+                    <strong>Face:</strong> {face}
+                  </div>
+                  <div style={{ fontSize: 11, color: THEME.textSecondary, lineHeight: 1.5 }}>
+                    <strong>Key:</strong> {body}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
 
         {/* Right: camera feed */}
@@ -136,6 +160,15 @@ export function VisualPage() {
     </div>
   );
 }
+
+const EMOTION_GUIDE = [
+  { emotion: 'joy', color: '#E8B931', face: 'Raised cheeks (AU6), lip corners pulled up (AU12)', body: 'Crow\'s feet around eyes, teeth may show' },
+  { emotion: 'sadness', color: '#6B8DAE', face: 'Inner brow raise (AU1), brow lowerer (AU4), lip corner depressor (AU15)', body: 'Drooping eyelids, downcast gaze' },
+  { emotion: 'anger', color: '#C4614E', face: 'Brow lowerer (AU4), upper lid raiser (AU5), lid tightener (AU7), lip tightener (AU23)', body: 'Compressed lips, tense jaw, narrowed eyes' },
+  { emotion: 'fear', color: '#8B6BAE', face: 'Inner brow raise (AU1), outer brow raise (AU2), lip stretcher (AU20)', body: 'Wide eyes, tense mouth, frozen or pulled-back expression' },
+  { emotion: 'surprise', color: '#4EA88B', face: 'Inner + outer brow raise (AU1+2), upper lid raise (AU5), jaw drop (AU27)', body: 'Wide open eyes and mouth, raised eyebrows' },
+  { emotion: 'neutral', color: '#A8A08E', face: 'Relaxed muscles, no strong AU activation', body: 'Resting face — may look serious but isn\'t negative' },
+];
 
 const pageTitle: React.CSSProperties = { margin: '0 0 6px', fontSize: 22, fontWeight: 700, color: THEME.text };
 const pageSubtitle: React.CSSProperties = { margin: '0 0 24px', fontSize: 13, color: THEME.textSecondary };

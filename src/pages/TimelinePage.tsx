@@ -1,9 +1,10 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useRef, useEffect } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { useEmotion } from '../context/EmotionContext';
 import { EmotionBadge } from '../components/EmotionBadge';
 import { THEME, EMOTION_COLORS } from '../utils/colors';
 import { exportSessionPDF } from '../utils/pdfExport';
+import { renderEmotionArtToCanvas } from '../utils/emotionArt';
 import type { EmotionLabel } from '../types/emotions';
 
 export function TimelinePage() {
@@ -167,7 +168,44 @@ export function TimelinePage() {
               </div>
             </div>
           )}
+
+          {/* Emotion art preview */}
+          {frames.length >= 3 && <EmotionArtPreview frames={frames} />}
         </div>
+      )}
+    </div>
+  );
+}
+
+function EmotionArtPreview({ frames }: { frames: import('../types/emotions').EmotionFrame[] }) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [rendered, setRendered] = useState(false);
+
+  useEffect(() => {
+    if (!canvasRef.current || frames.length < 3) return;
+    renderEmotionArtToCanvas(canvasRef.current, frames);
+    setRendered(true);
+  }, [frames.length]);
+
+  return (
+    <div style={card}>
+      <h3 style={sectionLabel}>Emotional Fingerprint — Generative Art</h3>
+      <p style={{ fontSize: 12, color: THEME.textSecondary, marginBottom: 12, lineHeight: 1.5 }}>
+        A unique painting created from your session data. Joy rises as warm gold, sadness falls as cool blue,
+        anger bursts in red, fear scatters in violet, surprise radiates in teal. This artwork is included in your PDF export.
+      </p>
+      <div style={{ borderRadius: 10, overflow: 'hidden', border: `1px solid ${THEME.border}` }}>
+        <canvas
+          ref={canvasRef}
+          width={900}
+          height={500}
+          style={{ width: '100%', height: 'auto', display: 'block' }}
+        />
+      </div>
+      {rendered && (
+        <p style={{ fontSize: 10, color: THEME.textMuted, marginTop: 8, fontStyle: 'italic', textAlign: 'center' }}>
+          Particle flow field influenced by session emotion distribution · Plutchik-inspired palette
+        </p>
       )}
     </div>
   );

@@ -1,6 +1,7 @@
 import jsPDF from 'jspdf';
 import type { Session, EmotionLabel } from '../types/emotions';
 import { EMOTION_COLORS } from './colors';
+import { generateEmotionArt } from './emotionArt';
 
 const HEX_TO_RGB = (hex: string): [number, number, number] => {
   const r = parseInt(hex.slice(1, 3), 16);
@@ -212,12 +213,45 @@ export function exportSessionPDF(session: Session) {
     });
   }
 
-  // ── Footer ───────────────────────────────────────────────────────────────────
+  // ── Emotion Art — Full Page Painting ──────────────────────────────────────
+  pdf.addPage();
   const pageH = pdf.internal.pageSize.getHeight();
+
+  // Title on the art page
+  pdf.setFont('helvetica', 'italic');
+  pdf.setFontSize(14);
+  pdf.setTextColor(168, 160, 142);
+  pdf.text('Your Emotional Fingerprint', W / 2, 14, { align: 'center' });
+
+  // Generate the art canvas
+  const artWidth = 1200;
+  const artHeight = 900;
+  const artCanvas = generateEmotionArt(frames, artWidth, artHeight);
+  const artDataUrl = artCanvas.toDataURL('image/png');
+
+  // Place art on page (full width with small margin)
+  const artMargin = 10;
+  const artPdfW = W - artMargin * 2;
+  const artPdfH = (artHeight / artWidth) * artPdfW;
+  pdf.addImage(artDataUrl, 'PNG', artMargin, 20, artPdfW, artPdfH);
+
+  // Art legend
+  const legendY = 20 + artPdfH + 6;
   pdf.setFont('helvetica', 'normal');
   pdf.setFontSize(8);
   pdf.setTextColor(160, 154, 145);
-  pdf.text('EmotionsAI · Observational wellness tool, not a diagnostic instrument · All data processed locally', W / 2, pageH - 8, { align: 'center' });
+  pdf.text('Each color and flow pattern represents a different emotion detected during your session.', W / 2, legendY, { align: 'center' });
+  pdf.text('Joy rises (gold) · Sadness falls (blue) · Anger bursts (red) · Fear scatters (violet) · Surprise radiates (teal)', W / 2, legendY + 5, { align: 'center' });
+  pdf.text('The bottom ribbon shows your dominant emotion at each moment.', W / 2, legendY + 10, { align: 'center' });
+
+  // Footer on both pages
+  [1, 2].forEach(pageNum => {
+    pdf.setPage(pageNum);
+    pdf.setFont('helvetica', 'normal');
+    pdf.setFontSize(8);
+    pdf.setTextColor(160, 154, 145);
+    pdf.text('EmotionsAI · Observational wellness tool, not a diagnostic instrument · All data processed locally', W / 2, pageH - 8, { align: 'center' });
+  });
 
   pdf.save(`emotions-session-${session.id.slice(0, 8)}-${new Date().toISOString().slice(0, 10)}.pdf`);
 }
