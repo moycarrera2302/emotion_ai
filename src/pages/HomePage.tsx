@@ -437,6 +437,30 @@ function HeroArtDemo() {
 }
 
 function ArtistCard({ artist }: { artist: import('../utils/emotionArt').ArtistStyle }) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [rendered, setRendered] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !rendered) {
+          const c = canvasRef.current;
+          if (!c) return;
+          c.width = 320;
+          c.height = 200;
+          const { canvas: art } = generateEmotionArt(makeDemoFrames(), 320, 200, artist);
+          const ctx = c.getContext('2d');
+          if (ctx) ctx.drawImage(art, 0, 0);
+          setRendered(true);
+        }
+      },
+      { rootMargin: '100px' }
+    );
+
+    if (canvasRef.current) observer.observe(canvasRef.current);
+    return () => observer.disconnect();
+  }, [artist, rendered]);
+
   return (
     <div style={{
       background: '#FDFBF8', borderRadius: 14, overflow: 'hidden',
@@ -445,10 +469,13 @@ function ArtistCard({ artist }: { artist: import('../utils/emotionArt').ArtistSt
       onMouseEnter={e => (e.currentTarget.style.boxShadow = '0 8px 28px rgba(44,42,38,0.10)')}
       onMouseLeave={e => (e.currentTarget.style.boxShadow = 'none')}
     >
-      <div style={{
-        width: '100%', height: 140, display: 'block',
-        background: `linear-gradient(135deg, ${artist.bgColors[0]}, ${artist.bgColors[1]})`,
-      }} />
+      <canvas
+        ref={canvasRef}
+        style={{
+          width: '100%', height: 140, display: 'block',
+          background: rendered ? 'transparent' : `linear-gradient(135deg, ${artist.bgColors[0]}, ${artist.bgColors[1]})`,
+        }}
+      />
       <div style={{ padding: '12px 16px' }}>
         <div style={{
           fontFamily: "'Playfair Display', Georgia, serif",
