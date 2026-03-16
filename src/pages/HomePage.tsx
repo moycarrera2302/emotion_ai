@@ -206,14 +206,8 @@ export function HomePage() {
             </div>
           </div>
 
-          <div className="reveal-right" style={{
-            borderRadius: 20, overflow: 'hidden', boxShadow: '0 20px 60px rgba(44,42,38,0.12)',
-            border: '1px solid #E8E4DD', minHeight: 360,
-            background: 'linear-gradient(135deg, #F8F5F0 0%, #E8E0D0 50%, #D8CEBC 100%)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 80, opacity: 0.25,
-          }}>
-            🎨
+          <div className="reveal-right">
+            <HeroArtDemo />
           </div>
         </div>
       </section>
@@ -415,7 +409,30 @@ function EmotionOrb({ color }: { color: string }) {
   );
 }
 
+function HeroArtDemo() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    // Pick a random artist for the hero demo
+    const randomArtist = ARTISTS[Math.floor(Math.random() * ARTISTS.length)];
+    canvas.width = 700;
+    canvas.height = 360;
+    const { canvas: art } = generateEmotionArt(makeDemoFrames(), 700, 360, randomArtist);
+    const ctx = canvas.getContext('2d');
+    if (ctx) ctx.drawImage(art, 0, 0);
+  }, []);
+
+  return (
+    <div style={{
+      borderRadius: 20, overflow: 'hidden', boxShadow: '0 20px 60px rgba(44,42,38,0.12)',
+      border: '1px solid #E8E4DD',
+    }}>
+      <canvas ref={canvasRef} style={{ width: '100%', height: 360, display: 'block' }} />
+    </div>
+  );
+}
 
 function ArtistCard({ artist }: { artist: import('../utils/emotionArt').ArtistStyle }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
