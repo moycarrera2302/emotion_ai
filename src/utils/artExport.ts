@@ -4,14 +4,14 @@
 
 import jsPDF from 'jspdf';
 import type { EmotionFrame, EmotionLabel } from '../types/emotions';
-import { generateEmotionArt } from './emotionArt';
+import { generateEmotionArt, type ArtistStyle } from './emotionArt';
 
 const EMOTION_PALETTE_FIRST: Record<EmotionLabel, string> = {
   joy: '#E8B931', sadness: '#6B8DAE', anger: '#C4614E',
   fear: '#8B6BAE', surprise: '#4EA88B', disgust: '#7A8B5E', neutral: '#A8A08E',
 };
 
-export function exportFramedArt(frames: EmotionFrame[], sessionId: string) {
+export function exportFramedArt(frames: EmotionFrame[], sessionId: string, forceArtist?: ArtistStyle) {
   const ART_W = 1400;
   const ART_H = 1050;
   const FRAME_PAD = 48;
@@ -34,7 +34,7 @@ export function exportFramedArt(frames: EmotionFrame[], sessionId: string) {
   ctx.strokeRect(FRAME_PAD - 1, FRAME_PAD - 1, ART_W + 2, ART_H + 2);
 
   // Generate and draw art
-  const { canvas: artCanvas, artist } = generateEmotionArt(frames, ART_W, ART_H);
+  const { canvas: artCanvas, artist } = generateEmotionArt(frames, ART_W, ART_H, forceArtist);
   ctx.drawImage(artCanvas, FRAME_PAD, FRAME_PAD);
 
   // Bottom info bar

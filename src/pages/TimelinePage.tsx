@@ -4,12 +4,13 @@ import { useEmotion } from '../context/EmotionContext';
 import { EmotionBadge } from '../components/EmotionBadge';
 import { THEME, EMOTION_COLORS } from '../utils/colors';
 import { exportFramedArt, exportAnalyticsPDF } from '../utils/artExport';
-import { renderEmotionArtToCanvas } from '../utils/emotionArt';
+import { renderEmotionArtToCanvas, ARTISTS, type ArtistStyle } from '../utils/emotionArt';
 import type { EmotionLabel } from '../types/emotions';
 
 export function TimelinePage() {
   const { session } = useEmotion();
   const [exporting, setExporting] = useState(false);
+  const [selectedArtist, setSelectedArtist] = useState<ArtistStyle>(ARTISTS[0]);
   const frames = session.frames;
 
   const chartData = useMemo(() => frames.map((f, i) => ({
@@ -54,7 +55,7 @@ export function TimelinePage() {
 
   const handleArtDownload = () => {
     setExporting(true);
-    try { exportFramedArt(frames, session.id); }
+    try { exportFramedArt(frames, session.id, selectedArtist); }
     finally { setTimeout(() => setExporting(false), 800); }
   };
 
@@ -197,40 +198,58 @@ export function TimelinePage() {
           )}
 
           {/* Emotion art preview */}
-          {frames.length >= 3 && <EmotionArtPreview frames={frames} />}
+          {frames.length >= 3 && <EmotionArtPreview frames={frames} selected={selectedArtist} onSelect={setSelectedArtist} />}
         </div>
       )}
     </div>
   );
 }
 
-function EmotionArtPreview({ frames }: { frames: import('../types/emotions').EmotionFrame[] }) {
+function EmotionArtPreview({ frames, selected, onSelect }: {
+  frames: import('../types/emotions').EmotionFrame[];
+  selected: ArtistStyle;
+  onSelect: (a: ArtistStyle) => void;
+}) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [rendered, setRendered] = useState(false);
-  const [artistName, setArtistName] = useState('');
-  const [artistPrompt, setArtistPrompt] = useState('');
 
   useEffect(() => {
     if (!canvasRef.current || frames.length < 3) return;
-    const artist = renderEmotionArtToCanvas(canvasRef.current, frames);
-    setArtistName(artist.fullName);
-    setArtistPrompt(artist.prompt);
+    renderEmotionArtToCanvas(canvasRef.current, frames, selected);
     setRendered(true);
-  }, [frames.length]);
+  }, [frames.length, selected]);
 
   return (
     <div style={card}>
-      <h3 style={sectionLabel}>Emotional Fingerprint — Generative Art</h3>
-      {artistName && (
-        <p style={{ fontSize: 14, color: THEME.text, marginBottom: 4, fontStyle: 'italic', fontFamily: "'Playfair Display', Georgia, serif" }}>
-          Inspired by <strong>{artistName}</strong>
-        </p>
-      )}
-      {artistPrompt && (
-        <p style={{ fontSize: 12, color: THEME.textMuted, marginBottom: 12, lineHeight: 1.5 }}>
-          {artistPrompt}
-        </p>
-      )}
+      <h3 style={sectionLabel}>Emotional Fingerprint — Choose Your Master</h3>
+
+      {/* Artist picker */}
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 16 }}>
+        {ARTISTS.map(a => (
+          <button
+            key={a.name}
+            onClick={() => onSelect(a)}
+            style={{
+              background: selected.name === a.name ? '#2C2A26' : '#F5F2ED',
+              color: selected.name === a.name ? '#FDFBF8' : '#7A756B',
+              border: selected.name === a.name ? '1px solid #2C2A26' : '1px solid #E8E4DD',
+              borderRadius: 20, padding: '6px 14px',
+              fontSize: 12, fontWeight: selected.name === a.name ? 600 : 400,
+              cursor: 'pointer', transition: 'all 0.2s',
+            }}
+          >
+            {a.name}
+          </button>
+        ))}
+      </div>
+
+      <p style={{ fontSize: 14, color: THEME.text, marginBottom: 4, fontStyle: 'italic', fontFamily: "'Playfair Display', Georgia, serif" }}>
+        Inspired by <strong>{selected.fullName}</strong>
+      </p>
+      <p style={{ fontSize: 12, color: THEME.textMuted, marginBottom: 12, lineHeight: 1.5 }}>
+        {selected.prompt}
+      </p>
+
       <div style={{ borderRadius: 10, overflow: 'hidden', border: `1px solid ${THEME.border}` }}>
         <canvas
           ref={canvasRef}
@@ -241,7 +260,7 @@ function EmotionArtPreview({ frames }: { frames: import('../types/emotions').Emo
       </div>
       {rendered && (
         <p style={{ fontSize: 10, color: THEME.textMuted, marginTop: 8, fontStyle: 'italic', textAlign: 'center' }}>
-          Particle flow field influenced by session emotion distribution · Plutchik-inspired palette
+          Click a different artist to regenerate your painting
         </p>
       )}
     </div>

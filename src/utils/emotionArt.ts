@@ -34,7 +34,7 @@ export interface ArtistStyle {
   paletteShift: (r: number, g: number, b: number) => [number, number, number];
 }
 
-const ARTISTS: ArtistStyle[] = [
+export const ARTISTS: ArtistStyle[] = [
   {
     name: 'Monet',
     fullName: 'Claude Monet',
