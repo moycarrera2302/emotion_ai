@@ -1,43 +1,47 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import { useEmotion } from '../context/EmotionContext';
-import { THEME, EMOTION_COLORS } from '../utils/colors';
+import { EMOTION_COLORS } from '../utils/colors';
 
 const LINKS = [
   { to: '/', label: 'Home', exact: true },
-  { to: '/visual', label: 'Visual', exact: false },
-  { to: '/audio', label: 'Audio', exact: false },
-  { to: '/mindfulness', label: 'Mindfulness', exact: false },
-  { to: '/timeline', label: 'Timeline', exact: false },
+  { to: '/visual', label: 'Visual' },
+  { to: '/audio', label: 'Audio' },
+  { to: '/mindfulness', label: 'Mindfulness' },
+  { to: '/timeline', label: 'Timeline' },
 ];
 
 export function Nav() {
   const { session, latestFrame, start, pause, stop } = useEmotion();
+  const location = useLocation();
+  const isHome = location.pathname === '/' || location.pathname === '';
   const isActive = session.status === 'active';
-  const isPaused = session.status === 'paused';
   const emotion = latestFrame?.dominant_emotion;
 
   return (
     <header style={{
-      background: THEME.bgCard,
-      borderBottom: `1px solid ${THEME.border}`,
-      padding: '0 28px',
+      position: isHome ? 'fixed' : 'sticky',
+      top: 0,
+      left: 0,
+      right: 0,
+      zIndex: 100,
+      padding: '0 32px',
+      height: 56,
       display: 'flex',
       alignItems: 'center',
       gap: 32,
-      height: 56,
-      position: 'sticky',
-      top: 0,
-      zIndex: 100,
-      boxShadow: THEME.shadow,
+      background: isHome ? 'transparent' : 'rgba(253,251,248,0.92)',
+      backdropFilter: isHome ? 'none' : 'blur(12px)',
+      borderBottom: isHome ? 'none' : '1px solid #E8E4DD',
+      transition: 'background 0.3s, border-bottom 0.3s',
     }}>
-      {/* Brand */}
-      <div style={{ flexShrink: 0 }}>
-        <span style={{ fontSize: 16, fontWeight: 800, color: THEME.text, letterSpacing: -0.5 }}>
-          Emotions<span style={{ color: THEME.accent }}>AI</span>
-        </span>
-      </div>
+      <NavLink to="/" style={{
+        fontFamily: "'Playfair Display', Georgia, serif",
+        fontSize: 16, fontWeight: 800, color: '#2C2A26',
+        textDecoration: 'none', flexShrink: 0,
+      }}>
+        Emotions<span style={{ color: '#C4946A' }}>AI</span>
+      </NavLink>
 
-      {/* Nav links */}
       <nav style={{ display: 'flex', gap: 4 }}>
         {LINKS.map(({ to, label }) => (
           <NavLink
@@ -49,11 +53,10 @@ export function Nav() {
               borderRadius: 8,
               fontSize: 13,
               fontWeight: active ? 600 : 400,
-              color: active ? THEME.text : THEME.textSecondary,
-              background: active ? THEME.bgHover : 'transparent',
+              color: active ? '#2C2A26' : '#7A756B',
+              background: active && !isHome ? 'rgba(0,0,0,0.04)' : 'transparent',
               textDecoration: 'none',
-              border: active ? `1px solid ${THEME.border}` : '1px solid transparent',
-              transition: 'all 0.15s',
+              transition: 'all 0.2s',
             })}
           >
             {label}
@@ -61,7 +64,6 @@ export function Nav() {
         ))}
       </nav>
 
-      {/* Session controls + live emotion */}
       <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 10 }}>
         {emotion && isActive && (
           <div style={{
@@ -69,26 +71,39 @@ export function Nav() {
             background: `${EMOTION_COLORS[emotion]}18`,
             border: `1px solid ${EMOTION_COLORS[emotion]}40`,
             borderRadius: 20, padding: '4px 12px',
-            fontSize: 12, fontWeight: 600, color: THEME.text,
+            fontSize: 12, fontWeight: 600, color: '#2C2A26',
           }}>
-            <span style={{ width: 6, height: 6, borderRadius: '50%', background: EMOTION_COLORS[emotion], animation: 'pulse 2s infinite' }} />
+            <span style={{
+              width: 6, height: 6, borderRadius: '50%',
+              background: EMOTION_COLORS[emotion],
+              animation: 'pulse 2s infinite',
+            }} />
             <span style={{ textTransform: 'capitalize' }}>{emotion}</span>
-            <span style={{ color: THEME.textMuted, fontWeight: 400 }}>
-              {Math.round((latestFrame?.confidence ?? 0) * 100)}%
-            </span>
           </div>
         )}
 
         {!isActive ? (
-          <button onClick={start} style={{ ...btnStyle, background: THEME.positive, color: '#fff' }}>
+          <button onClick={start} style={{
+            background: '#2C2A26', color: '#FDFBF8',
+            border: 'none', borderRadius: 20, padding: '7px 18px',
+            fontSize: 12, fontWeight: 600, cursor: 'pointer',
+          }}>
             {session.status === 'completed' ? 'New Session' : 'Start'}
           </button>
         ) : (
           <div style={{ display: 'flex', gap: 6 }}>
-            <button onClick={pause} style={{ ...btnStyle, background: THEME.bgHover, color: THEME.text, border: `1px solid ${THEME.border}` }}>
-              {isPaused ? 'Resume' : 'Pause'}
+            <button onClick={pause} style={{
+              background: 'rgba(0,0,0,0.05)', color: '#2C2A26',
+              border: '1px solid #E8E4DD', borderRadius: 20, padding: '7px 14px',
+              fontSize: 12, fontWeight: 500, cursor: 'pointer',
+            }}>
+              Pause
             </button>
-            <button onClick={stop} style={{ ...btnStyle, background: THEME.negative, color: '#fff' }}>
+            <button onClick={stop} style={{
+              background: '#C4614E', color: '#fff',
+              border: 'none', borderRadius: 20, padding: '7px 14px',
+              fontSize: 12, fontWeight: 600, cursor: 'pointer',
+            }}>
               Stop
             </button>
           </div>
@@ -97,8 +112,3 @@ export function Nav() {
     </header>
   );
 }
-
-const btnStyle: React.CSSProperties = {
-  border: 'none', borderRadius: 8, padding: '7px 16px',
-  fontSize: 12, fontWeight: 600, cursor: 'pointer',
-};
