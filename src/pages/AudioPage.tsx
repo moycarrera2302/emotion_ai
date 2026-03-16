@@ -119,7 +119,7 @@ export function AudioPage() {
             <FeatureMeter label="Zero Crossing Rate" value={features.zcr} max={0.2} unit="" />
           </div>
           <p style={{ margin: '12px 0 0', fontSize: 10, color: THEME.textMuted, lineHeight: 1.5 }}>
-            GeMAPS-inspired features (Eyben et al., 2016). For full MFCC analysis, run the Python backend.
+            GeMAPS-inspired features (Eyben et al., 2016).
           </p>
         </div>
 
@@ -143,25 +143,7 @@ export function AudioPage() {
           )}
         </div>
 
-        {/* Python backend card */}
-        <div style={{ ...card, gridColumn: '1 / -1', borderColor: THEME.accentLight, background: `${THEME.accent}08` }}>
-          <h3 style={{ ...sectionLabel, color: THEME.accent }}>Python Backend — Advanced Analysis</h3>
-          <p style={{ margin: '0 0 10px', fontSize: 12, color: THEME.textSecondary, lineHeight: 1.6 }}>
-            For full prosodic analysis (MFCC, formants, jitter, shimmer, HNR) and Llama-powered insights, run the local Python backend:
-          </p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            {[
-              'cd backend',
-              'pip install -r requirements.txt',
-              'ollama pull llama3.2',
-              'uvicorn main:app --reload',
-            ].map(cmd => (
-              <code key={cmd} style={{ fontSize: 12, background: THEME.bgHover, border: `1px solid ${THEME.border}`, borderRadius: 6, padding: '6px 12px', color: THEME.text, display: 'block' }}>
-                {cmd}
-              </code>
-            ))}
-          </div>
-        </div>
+
       </div>
     </div>
   );
