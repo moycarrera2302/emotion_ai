@@ -1,4 +1,3 @@
-import { useEffect, useRef } from 'react';
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useEmotion } from '../context/EmotionContext';
