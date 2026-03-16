@@ -1,27 +1,7 @@
-import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useEmotion } from '../context/EmotionContext';
 import { useReveal } from '../hooks/useReveal';
-import { generateEmotionArt, ARTISTS } from '../utils/emotionArt';
-import type { EmotionFrame, EmotionDistribution, EmotionLabel } from '../types/emotions';
-
-// Generate demo frames for the hero art
-function makeDemoFrames(): EmotionFrame[] {
-  const emotions: EmotionLabel[] = ['joy', 'sadness', 'surprise', 'anger', 'neutral', 'fear', 'joy', 'neutral', 'joy', 'surprise'];
-  return emotions.map((e, i) => {
-    const dist: EmotionDistribution = { joy: 0.05, sadness: 0.05, anger: 0.05, fear: 0.05, surprise: 0.05, disgust: 0.05, neutral: 0.05 };
-    dist[e] = 0.65;
-    return {
-      timestamp: new Date(Date.now() - (emotions.length - i) * 2000).toISOString(),
-      session_id: 'demo', frame_number: i, dominant_emotion: e, confidence: 0.75,
-      emotion_distribution: dist,
-      dimensional_model: { valence: 0.3, arousal: 0.3, dominance: 0.3 },
-      visual: { dominant: e, confidence: 0.75, active_AUs: [], face_detected: true, expressivity_index: 0.6 },
-      flags: { micro_expression_detected: false, mixed_signals: false, stress_level: 0.2, emotional_shift: false },
-    };
-  });
-}
-
+import { ARTISTS } from '../utils/emotionArt';
 export function HomePage() {
   const { start } = useEmotion();
   useReveal();
@@ -210,8 +190,14 @@ export function HomePage() {
             </div>
           </div>
 
-          <div className="reveal-right">
-            <HeroArtDemo />
+          <div className="reveal-right" style={{
+            borderRadius: 20, overflow: 'hidden', boxShadow: '0 20px 60px rgba(44,42,38,0.12)',
+            border: '1px solid #E8E4DD', minHeight: 360,
+            background: 'linear-gradient(135deg, #F8F5F0 0%, #E8E0D0 50%, #D8CEBC 100%)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: 80, opacity: 0.25,
+          }}>
+            🎨
           </div>
         </div>
       </section>
@@ -413,54 +399,9 @@ function EmotionOrb({ color }: { color: string }) {
   );
 }
 
-function HeroArtDemo() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const dpr = Math.min(window.devicePixelRatio, 2);
-    canvas.width = canvas.clientWidth * dpr;
-    canvas.height = canvas.clientHeight * dpr;
-    const { canvas: art } = generateEmotionArt(makeDemoFrames(), canvas.width, canvas.height);
-    const ctx = canvas.getContext('2d');
-    if (ctx) ctx.drawImage(art, 0, 0);
-  }, []);
 
-  return (
-    <div style={{
-      borderRadius: 20, overflow: 'hidden', boxShadow: '0 20px 60px rgba(44,42,38,0.12)',
-      border: '1px solid #E8E4DD',
-    }}>
-      <canvas ref={canvasRef} style={{ width: '100%', height: 360, display: 'block' }} />
-    </div>
-  );
-}
 
 function ArtistCard({ artist }: { artist: import('../utils/emotionArt').ArtistStyle }) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [rendered, setRendered] = useState(false);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && !rendered) {
-          const c = canvasRef.current;
-          if (!c) return;
-          c.width = 320;
-          c.height = 200;
-          const { canvas: art } = generateEmotionArt(makeDemoFrames(), 320, 200, artist);
-          const ctx = c.getContext('2d');
-          if (ctx) ctx.drawImage(art, 0, 0);
-          setRendered(true);
-        }
-      },
-      { rootMargin: '100px' }
-    );
-
-    if (canvasRef.current) observer.observe(canvasRef.current);
-    return () => observer.disconnect();
-  }, [artist, rendered]);
-
   return (
     <div style={{
       background: '#FDFBF8', borderRadius: 14, overflow: 'hidden',
@@ -469,13 +410,19 @@ function ArtistCard({ artist }: { artist: import('../utils/emotionArt').ArtistSt
       onMouseEnter={e => (e.currentTarget.style.boxShadow = '0 8px 28px rgba(44,42,38,0.10)')}
       onMouseLeave={e => (e.currentTarget.style.boxShadow = 'none')}
     >
-      <canvas
-        ref={canvasRef}
-        style={{
-          width: '100%', height: 140, display: 'block',
-          background: rendered ? 'transparent' : `linear-gradient(135deg, ${artist.bgColors[0]}, ${artist.bgColors[1]})`,
-        }}
-      />
+      <div style={{
+        width: '100%', height: 140, display: 'block',
+        background: `linear-gradient(135deg, ${artist.bgColors[0]}, ${artist.bgColors[1]})`,
+        position: 'relative',
+      }}>
+        <div style={{
+          position: 'absolute', inset: 0,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontSize: 48, opacity: 0.3,
+        }}>
+          🎨
+        </div>
+      </div>
       <div style={{ padding: '12px 16px' }}>
         <div style={{
           fontFamily: "'Playfair Display', Georgia, serif",
