@@ -227,12 +227,12 @@ export function VisualPage() {
           )}
 
           {/* Active AUs */}
-          {latestFrame?.modality_signals.visual.face_detected && (
+          {latestFrame?.visual.face_detected && (
             <div style={card}>
               <h3 style={sectionLabel}>Facial Action Units</h3>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 8 }}>
-                {latestFrame.modality_signals.visual.active_AUs.length > 0
-                  ? latestFrame.modality_signals.visual.active_AUs.map(au => (
+                {latestFrame.visual.active_AUs.length > 0
+                  ? latestFrame.visual.active_AUs.map(au => (
                     <span key={au} style={{
                       background: `${EMOTION_COLORS[latestFrame.dominant_emotion]}15`,
                       border: `1px solid ${EMOTION_COLORS[latestFrame.dominant_emotion]}30`,

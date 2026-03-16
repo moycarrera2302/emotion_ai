@@ -16,10 +16,7 @@ function makeDemoFrames(): EmotionFrame[] {
       session_id: 'demo', frame_number: i, dominant_emotion: e, confidence: 0.75,
       emotion_distribution: dist,
       dimensional_model: { valence: 0.3, arousal: 0.3, dominance: 0.3 },
-      modality_signals: {
-        visual: { dominant: e, confidence: 0.75, active_AUs: [], face_detected: true, expressivity_index: 0.6 },
-        audio: { dominant: e, confidence: 0, features: { pitch_mean_hz: 0, pitch_range_hz: 0, energy_rms: 0, speech_rate_syl_s: 0, pause_ratio: 0 }, voice_quality: 'clear', speech_detected: false },
-      },
+      visual: { dominant: e, confidence: 0.75, active_AUs: [], face_detected: true, expressivity_index: 0.6 },
       flags: { micro_expression_detected: false, mixed_signals: false, stress_level: 0.2, emotional_shift: false },
     };
   });

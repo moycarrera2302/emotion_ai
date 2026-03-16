@@ -26,21 +26,7 @@ export interface VisualSignal {
   expressivity_index: number;
 }
 
-export interface AudioFeatures {
-  pitch_mean_hz: number;
-  pitch_range_hz: number;
-  energy_rms: number;
-  speech_rate_syl_s: number;
-  pause_ratio: number;
-}
 
-export interface AudioSignal {
-  dominant: EmotionLabel;
-  confidence: number;
-  features: AudioFeatures;
-  voice_quality: 'clear' | 'breathy' | 'tense' | 'creaky';
-  speech_detected: boolean;
-}
 
 export interface EmotionFlags {
   micro_expression_detected: boolean;
@@ -57,10 +43,7 @@ export interface EmotionFrame {
   confidence: number;
   emotion_distribution: EmotionDistribution;
   dimensional_model: DimensionalModel;
-  modality_signals: {
-    visual: VisualSignal;
-    audio: AudioSignal;
-  };
+  visual: VisualSignal;
   flags: EmotionFlags;
 }
 

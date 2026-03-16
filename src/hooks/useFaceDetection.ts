@@ -19,7 +19,7 @@ function weightedDim(dist: EmotionDistribution, map: Record<EmotionLabel, number
 }
 
 // ── Temporal smoothing (exponential moving average) ─────────────────────────
-const SMOOTHING_ALPHA = 0.35; // lower = smoother (more history weight), higher = more responsive
+const SMOOTHING_ALPHA = 0.45; // lower = smoother (more history weight), higher = more responsive. Higher = faster response to real expressions
 
 class EmotionSmoother {
   private smoothed: EmotionDistribution | null = null;
@@ -35,12 +35,12 @@ class EmotionSmoother {
     // ── Reduce neutral bias ──
     // face-api.js over-reports neutral. Amplify non-neutral signals.
     const nonNeutralTotal = 1 - result.neutral;
-    if (nonNeutralTotal > 0.08) {
+    if (nonNeutralTotal > 0.05) {
       // Boost non-neutral emotions by redistributing part of neutral
-      const boost = result.neutral * 0.35; // steal 35% of neutral's probability
+      const boost = result.neutral * 0.55; // steal 55% of neutral's probability (up from 35%)
       result.neutral -= boost;
       (Object.keys(result) as EmotionLabel[]).forEach(e => {
-        if (e !== 'neutral' && result[e] > 0.01) {
+        if (e !== 'neutral' && result[e] > 0.005) {
           result[e] += boost * (result[e] / nonNeutralTotal);
         }
       });
@@ -88,7 +88,7 @@ function drawFaceMesh(ctx: CanvasRenderingContext2D, positions: faceapi.Point[],
 }
 
 // ── Detection interval (ms) ─────────────────────────────────────────────────
-const DETECTION_INTERVAL = 500; // 2 FPS instead of 5 FPS — more stable readings
+const DETECTION_INTERVAL = 250; // 4 FPS — improved response time while maintaining smoothness
 
 // ── Hook ────────────────────────────────────────────────────────────────────
 interface Options {
@@ -243,10 +243,7 @@ function buildFrameFromDetection(
     dominant_emotion: dominant, confidence,
     emotion_distribution: distribution,
     dimensional_model: { valence, arousal, dominance },
-    modality_signals: {
-      visual: { dominant, confidence, active_AUs: AU_MAP[dominant], face_detected: true, expressivity_index: 1 - distribution.neutral },
-      audio: { dominant, confidence: 0, features: { pitch_mean_hz: 0, pitch_range_hz: 0, energy_rms: 0, speech_rate_syl_s: 0, pause_ratio: 0 }, voice_quality: 'clear', speech_detected: false },
-    },
+    visual: { dominant, confidence, active_AUs: AU_MAP[dominant], face_detected: true, expressivity_index: 1 - distribution.neutral },
     flags: { micro_expression_detected: false, mixed_signals: false, stress_level: stress, emotional_shift: false },
   };
 }
@@ -257,10 +254,7 @@ function buildNoFaceFrame(sessionId: string, frameNumber: number): EmotionFrame 
     timestamp: new Date().toISOString(), session_id: sessionId, frame_number: frameNumber,
     dominant_emotion: 'neutral', confidence: 0, emotion_distribution: dist,
     dimensional_model: { valence: 0, arousal: 0, dominance: 0 },
-    modality_signals: {
-      visual: { dominant: 'neutral', confidence: 0, active_AUs: [], face_detected: false, expressivity_index: 0 },
-      audio: { dominant: 'neutral', confidence: 0, features: { pitch_mean_hz: 0, pitch_range_hz: 0, energy_rms: 0, speech_rate_syl_s: 0, pause_ratio: 0 }, voice_quality: 'clear', speech_detected: false },
-    },
+    visual: { dominant: 'neutral', confidence: 0, active_AUs: [], face_detected: false, expressivity_index: 0 },
     flags: { micro_expression_detected: false, mixed_signals: false, stress_level: 0, emotional_shift: false },
   };
 }

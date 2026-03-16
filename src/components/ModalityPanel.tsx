@@ -1,15 +1,14 @@
-import type { VisualSignal, AudioSignal } from '../types/emotions';
+import type { VisualSignal } from '../types/emotions';
 import { THEME } from '../utils/colors';
 
 interface Props {
-  type: 'visual' | 'audio';
-  signal: VisualSignal | AudioSignal;
+  type: 'visual';
+  signal: VisualSignal;
 }
 
-export function ModalityPanel({ type, signal }: Props) {
-  const isVisual = type === 'visual';
-  const title = isVisual ? 'Visual (Camera)' : 'Audio (Voice)';
-  const icon = isVisual ? '\u{1F441}' : '\u{1F3A4}';
+export function ModalityPanel({ signal }: Props) {
+  const title = 'Visual (Camera)';
+  const icon = '\u{1F441}';
 
   return (
     <div style={{
@@ -31,23 +30,9 @@ export function ModalityPanel({ type, signal }: Props) {
 
       <div style={{ fontSize: 11, color: THEME.textSecondary, lineHeight: 1.6 }}>
         <div>Dominant: <strong style={{ color: THEME.text, textTransform: 'capitalize' }}>{signal.dominant}</strong></div>
-
-        {isVisual && (
-          <>
-            <div>AUs: {(signal as VisualSignal).active_AUs.join(', ') || 'None'}</div>
-            <div>Expressivity: {((signal as VisualSignal).expressivity_index * 100).toFixed(0)}%</div>
-            <div>Face: {(signal as VisualSignal).face_detected ? 'Detected' : 'Not detected'}</div>
-          </>
-        )}
-
-        {!isVisual && (
-          <>
-            <div>Pitch: {(signal as AudioSignal).features.pitch_mean_hz} Hz (range: {(signal as AudioSignal).features.pitch_range_hz})</div>
-            <div>Speech rate: {(signal as AudioSignal).features.speech_rate_syl_s.toFixed(1)} syl/s</div>
-            <div>Energy: {((signal as AudioSignal).features.energy_rms * 100).toFixed(0)}%</div>
-            <div>Quality: {(signal as AudioSignal).voice_quality}</div>
-          </>
-        )}
+        <div>AUs: {signal.active_AUs.join(', ') || 'None'}</div>
+        <div>Expressivity: {(signal.expressivity_index * 100).toFixed(0)}%</div>
+        <div>Face: {signal.face_detected ? 'Detected' : 'Not detected'}</div>
       </div>
     </div>
   );

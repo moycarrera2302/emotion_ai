@@ -59,9 +59,8 @@ export function EmotionDashboard({ frame }: Props) {
         <StressIndicator level={frame.flags.stress_level} />
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 20 }}>
-        <ModalityPanel type="visual" signal={frame.modality_signals.visual} />
-        <ModalityPanel type="audio" signal={frame.modality_signals.audio} />
+      <div style={{ marginTop: 20 }}>
+        <ModalityPanel type="visual" signal={frame.visual} />
       </div>
     </div>
   );

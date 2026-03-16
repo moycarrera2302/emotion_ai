@@ -4,7 +4,6 @@ import type {
   EmotionFrame,
   DimensionalModel,
   VisualSignal,
-  AudioSignal,
   EmotionFlags,
 } from '../types/emotions';
 
@@ -77,8 +76,7 @@ export function generateEmotionFrame(sessionId: string): EmotionFrame {
 
   const dimensional = generateDimensional(dominant, confidence);
   const visual = generateVisual(dominant, confidence);
-  const audio = generateAudio(dominant, confidence);
-  const flags = generateFlags(dominant, confidence, visual, audio);
+  const flags = generateFlags(dominant, confidence, visual);
 
   return {
     timestamp: new Date().toISOString(),
@@ -88,7 +86,7 @@ export function generateEmotionFrame(sessionId: string): EmotionFrame {
     confidence,
     emotion_distribution: distribution,
     dimensional_model: dimensional,
-    modality_signals: { visual, audio },
+    visual,
     flags,
   };
 }
@@ -131,30 +129,11 @@ function generateVisual(dominant: EmotionLabel, confidence: number): VisualSigna
   };
 }
 
-function generateAudio(dominant: EmotionLabel, confidence: number): AudioSignal {
-  const basePitch = dominant === 'joy' ? 220 : dominant === 'sadness' ? 150 : dominant === 'anger' ? 260 : 190;
-  return {
-    dominant,
-    confidence: clamp(jitter(confidence - 0.05, 0.1)),
-    features: {
-      pitch_mean_hz: Math.round(jitter(basePitch, 30)),
-      pitch_range_hz: Math.round(jitter(80, 25)),
-      energy_rms: clamp(jitter(0.65, 0.15)),
-      speech_rate_syl_s: clamp(jitter(4.0, 1.0), 1.5, 7.0),
-      pause_ratio: clamp(jitter(0.18, 0.08)),
-    },
-    voice_quality: Math.random() > 0.8 ? 'breathy' : 'clear',
-    speech_detected: Math.random() > 0.05,
-  };
-}
-
 function generateFlags(
   dominant: EmotionLabel,
   _confidence: number,
-  visual: VisualSignal,
-  audio: AudioSignal,
+  _visual: VisualSignal,
 ): EmotionFlags {
-  const mixed = visual.dominant !== audio.dominant;
   stressAccumulator = clamp(
     stressAccumulator + (dominant === 'anger' || dominant === 'fear' ? 0.02 : -0.01),
     0, 1,
@@ -162,7 +141,7 @@ function generateFlags(
 
   return {
     micro_expression_detected: Math.random() < 0.05,
-    mixed_signals: mixed,
+    mixed_signals: false,
     stress_level: clamp(jitter(stressAccumulator, 0.05)),
     emotional_shift: frameCounter > 1 && Math.random() < 0.08,
   };

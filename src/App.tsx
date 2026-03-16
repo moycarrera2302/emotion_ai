@@ -2,7 +2,6 @@ import { Routes, Route } from 'react-router-dom';
 import { Nav } from './components/Nav';
 import { HomePage } from './pages/HomePage';
 import { VisualPage } from './pages/VisualPage';
-import { AudioPage } from './pages/AudioPage';
 import { MindfulnessPage } from './pages/MindfulnessPage';
 import { TimelinePage } from './pages/TimelinePage';
 import { THEME } from './utils/colors';
@@ -14,7 +13,6 @@ export default function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/visual" element={<VisualPage />} />
-        <Route path="/audio" element={<AudioPage />} />
         <Route path="/mindfulness" element={<MindfulnessPage />} />
         <Route path="/timeline" element={<TimelinePage />} />
       </Routes>
