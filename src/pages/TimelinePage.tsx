@@ -297,6 +297,186 @@ export function TimelinePage() {
               </p>
             </div>
           )}
+
+          {/* Generative Art Deep Dive */}
+          {frames.length >= 3 && (
+            <div style={{
+              background: 'linear-gradient(135deg, #F5F0E8 0%, #EBE5D8 100%)',
+              borderRadius: 12, padding: 28, marginTop: 20, border: '1px solid #E8E4DD',
+            }}>
+              <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: 22, fontWeight: 700, color: '#2C2A26', marginBottom: 16 }}>
+                🎨 Reading Your Generative Art
+              </h3>
+              
+              <p style={{ fontSize: 14, color: '#5A5650', lineHeight: 1.8, marginBottom: 20 }}>
+                Your emotional painting is not random. Every stroke, color, and particle placement encodes your emotional journey.
+                Below is how to interpret what you're seeing — and what each artist's unique style reveals.
+              </p>
+
+              {/* How It Works Section */}
+              <div style={{ background: '#FDFBF8', borderRadius: 8, padding: 16, marginBottom: 20 }}>
+                <h4 style={{ fontSize: 13, fontWeight: 700, color: '#2C2A26', marginBottom: 12, textTransform: 'uppercase', letterSpacing: 1 }}>
+                  How the Painting Is Built
+                </h4>
+                <div style={{ fontSize: 13, color: '#5A5650', lineHeight: 1.9 }}>
+                  <div style={{ marginBottom: 12 }}>
+                    <strong>1. Particle Generation</strong><br />
+                    For every emotion detected, thousands of tiny particles "spawn" in specific locations and with specific velocities:
+                    <ul style={{ marginTop: 6, marginBottom: 0, paddingLeft: 20 }}>
+                      <li><strong>Joy</strong> spawns in the lower half, rising upward (optimism climbing)</li>
+                      <li><strong>Sadness</strong> spawns high, falling downward (weight pulling down)</li>
+                      <li><strong>Anger</strong> spawns from center, bursting outward in all directions (explosive energy)</li>
+                      <li><strong>Fear</strong> scatters randomly across the canvas (panic/uncertainty)</li>
+                      <li><strong>Surprise</strong> radiates outward from center in rays (sudden expansion)</li>
+                      <li><strong>Disgust</strong> spawns in lower region, moving laterally (withdrawal)</li>
+                    </ul>
+                  </div>
+
+                  <div style={{ marginBottom: 12 }}>
+                    <strong>2. Flow Field Simulation</strong><br />
+                    Particles don't move randomly. They follow an invisible "flow field" — a mathematical vector field based on Perlin-like noise.
+                    Think of it like wind patterns or water currents. Each artist controls the <strong>strength</strong> of this flow:
+                    <ul style={{ marginTop: 6, marginBottom: 0, paddingLeft: 20 }}>
+                      <li>Van Gogh (0.7) — Strong, swirling currents = turbulent, expressive strokes</li>
+                      <li>Monet (0.3) — Gentle currents = soft, dissolved edges</li>
+                      <li>Pissarro (0.15) — Almost still = dense, scattered pointillist dots</li>
+                    </ul>
+                  </div>
+
+                  <div style={{ marginBottom: 12 }}>
+                    <strong>3. Artist-Specific Rendering</strong><br />
+                    Each of the 9 masters draws particles differently:
+                    <ul style={{ marginTop: 6, marginBottom: 0, paddingLeft: 20 }}>
+                      <li><strong>Monet:</strong> Soft horizontal dabs that blur and reflect</li>
+                      <li><strong>Van Gogh:</strong> Thick, curved bezier strokes following turbulent flow</li>
+                      <li><strong>Pissarro:</strong> Tiny dots scattered with companions (pointillism)</li>
+                      <li><strong>Cézanne:</strong> Rotated rectangles in geometric planes</li>
+                      <li><strong>Renoir:</strong> Luminous glowing circles with warm overlaps</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <strong>4. Temporal Layering</strong><br />
+                    Particles live for 40-120 frames, fading gradually. This creates <strong>depth</strong> — recent emotions appear sharp and vivid,
+                    while older emotions fade into the background. The painting accumulates your emotional history, layer by layer.
+                  </div>
+                </div>
+              </div>
+
+              {/* The Color Language */}
+              <div style={{ background: '#FDFBF8', borderRadius: 8, padding: 16, marginBottom: 20 }}>
+                <h4 style={{ fontSize: 13, fontWeight: 700, color: '#2C2A26', marginBottom: 12, textTransform: 'uppercase', letterSpacing: 1 }}>
+                  The Color Language (Emotion Palette)
+                </h4>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12 }}>
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+                      <div style={{ width: 20, height: 20, borderRadius: 4, background: '#E8B931' }} />
+                      <div>
+                        <div style={{ fontSize: 12, fontWeight: 700, color: '#2C2A26' }}>Joy</div>
+                        <div style={{ fontSize: 11, color: '#8A857B' }}>Warm gold, rising motion</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+                      <div style={{ width: 20, height: 20, borderRadius: 4, background: '#6B8DAE' }} />
+                      <div>
+                        <div style={{ fontSize: 12, fontWeight: 700, color: '#2C2A26' }}>Sadness</div>
+                        <div style={{ fontSize: 11, color: '#8A857B' }}>Cool blue, falling motion</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+                      <div style={{ width: 20, height: 20, borderRadius: 4, background: '#C4614E' }} />
+                      <div>
+                        <div style={{ fontSize: 12, fontWeight: 700, color: '#2C2A26' }}>Anger</div>
+                        <div style={{ fontSize: 11, color: '#8A857B' }}>Crimson, explosive burst</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+                      <div style={{ width: 20, height: 20, borderRadius: 4, background: '#8B6BAE' }} />
+                      <div>
+                        <div style={{ fontSize: 12, fontWeight: 700, color: '#2C2A26' }}>Fear</div>
+                        <div style={{ fontSize: 11, color: '#8A857B' }}>Deep purple, scattered</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+                      <div style={{ width: 20, height: 20, borderRadius: 4, background: '#4EA88B' }} />
+                      <div>
+                        <div style={{ fontSize: 12, fontWeight: 700, color: '#2C2A26' }}>Surprise</div>
+                        <div style={{ fontSize: 11, color: '#8A857B' }}>Teal, radiating outward</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+                      <div style={{ width: 20, height: 20, borderRadius: 4, background: '#7A8B5E' }} />
+                      <div>
+                        <div style={{ fontSize: 12, fontWeight: 700, color: '#2C2A26' }}>Disgust</div>
+                        <div style={{ fontSize: 11, color: '#8A857B' }}>Olive green, withdrawn</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Spatial Dimensions */}
+              <div style={{ background: '#FDFBF8', borderRadius: 8, padding: 16, marginBottom: 20 }}>
+                <h4 style={{ fontSize: 13, fontWeight: 700, color: '#2C2A26', marginBottom: 12, textTransform: 'uppercase', letterSpacing: 1 }}>
+                  Spatial Dimensions: What Position Means
+                </h4>
+                <div style={{ fontSize: 13, color: '#5A5650', lineHeight: 1.8 }}>
+                  <div style={{ marginBottom: 12 }}>
+                    <strong>Vertical Axis (Top ↔ Bottom)</strong><br />
+                    Maps to <strong>Valence</strong> (positive vs. negative emotion):
+                    <ul style={{ marginTop: 6, marginBottom: 0, paddingLeft: 20 }}>
+                      <li><strong>Top:</strong> Positive emotions (joy, surprise) — uplifting, ascending</li>
+                      <li><strong>Bottom:</strong> Negative emotions (sadness, disgust) — heavy, descending</li>
+                    </ul>
+                  </div>
+
+                  <div style={{ marginBottom: 12 }}>
+                    <strong>Horizontal Spread (Left ↔ Right)</strong><br />
+                    Maps to <strong>Arousal</strong> (activation level):
+                    <ul style={{ marginTop: 6, marginBottom: 0, paddingLeft: 20 }}>
+                      <li><strong>Narrow/Dense:</strong> Low arousal (calm sadness, peaceful joy)</li>
+                      <li><strong>Wide/Dispersed:</strong> High arousal (excited joy, frantic fear, explosive anger)</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <strong>Depth/Opacity (Fading)</strong><br />
+                    Maps to <strong>Time</strong>:
+                    <ul style={{ marginTop: 6, marginBottom: 0, paddingLeft: 20 }}>
+                      <li><strong>Bright & Sharp:</strong> Recent emotions (last 20 seconds)</li>
+                      <li><strong>Faded & Ghostly:</strong> Older emotions (earlier in session)</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              {/* Reading Tips */}
+              <div style={{ background: '#FDFBF8', borderRadius: 8, padding: 16 }}>
+                <h4 style={{ fontSize: 13, fontWeight: 700, color: '#2C2A26', marginBottom: 12, textTransform: 'uppercase', letterSpacing: 1 }}>
+                  How to Read Your Painting
+                </h4>
+                <ul style={{ fontSize: 13, color: '#5A5650', lineHeight: 1.9, paddingLeft: 20, margin: 0 }}>
+                  <li><strong>Dense clusters?</strong> Sustained emotion — you stayed in one state for a while</li>
+                  <li><strong>Scattered, explosive patterns?</strong> Turbulent emotions — rapid shifts or high intensity</li>
+                  <li><strong>Layered fading?</strong> Complex emotional arc — you evolved through multiple states</li>
+                  <li><strong>Bottom-heavy painting?</strong> Predominantly negative valence — challenging session</li>
+                  <li><strong>Top-heavy painting?</strong> Predominantly positive valence — uplifting session</li>
+                  <li><strong>Artist style matters:</strong> Van Gogh emphasizes turbulence; Monet emphasizes subtlety; Pissarro emphasizes texture</li>
+                </ul>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
