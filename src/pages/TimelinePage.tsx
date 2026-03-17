@@ -224,6 +224,79 @@ export function TimelinePage() {
 
           {/* Emotion art preview */}
           {frames.length >= 3 && <div id="art-section"><EmotionArtPreview frames={frames} selected={selectedArtist} onSelect={setSelectedArtist} /></div>}
+
+          {/* Emotional Fingerprint Explanation */}
+          {frames.length >= 3 && (
+            <div style={{
+              background: 'linear-gradient(135deg, #F8F5F0 0%, #EFE8DC 100%)',
+              borderRadius: 12, padding: 28, marginTop: 20, border: '1px solid #E8E4DD',
+            }}>
+              <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: 22, fontWeight: 700, color: '#2C2A26', marginBottom: 16 }}>
+                What Is Your Emotional Fingerprint?
+              </h3>
+              
+              <p style={{ fontSize: 14, color: '#5A5650', lineHeight: 1.8, marginBottom: 16 }}>
+                Your <strong>emotional fingerprint</strong> is a unique, multi-dimensional snapshot of your emotional landscape during this session.
+                Just like no two fingerprints are identical, no two emotional journeys are the same. Your fingerprint captures not just
+                <em> what </em>you felt, but <em>how</em> you felt it — the intensity, the duration, the peaks, and the valleys.
+              </p>
+
+              <div style={{ background: '#FDFBF8', borderRadius: 8, padding: 16, marginBottom: 16 }}>
+                <h4 style={{ fontSize: 13, fontWeight: 700, color: '#2C2A26', marginBottom: 12, textTransform: 'uppercase', letterSpacing: 1 }}>
+                  How It's Built
+                </h4>
+                <ol style={{ fontSize: 13, color: '#5A5650', lineHeight: 1.9, paddingLeft: 20, margin: 0 }}>
+                  <li><strong>Face Detection (4 FPS)</strong> — Your camera captures 68 facial landmark points every 250ms using neural networks trained on thousands of expressions.</li>
+                  <li><strong>Emotion Classification</strong> — Each frame is analyzed for 7 universal emotions (joy, sadness, anger, fear, surprise, disgust, neutral) using Facial Action Coding System (FACS).</li>
+                  <li><strong>Temporal Smoothing</strong> — Raw results are smoothed over time to reduce noise and camera jitter, revealing your true emotional patterns.</li>
+                  <li><strong>Dimensional Mapping</strong> — Each moment is converted into three dimensions: <strong>Valence</strong> (negative ↔ positive), <strong>Arousal</strong> (calm ↔ excited), and <strong>Stress</strong> (relaxed ↔ tense).</li>
+                  <li><strong>Data Aggregation</strong> — All frames combine into a session summary: dominant emotions, trends, peak moments, and emotional variability.</li>
+                  <li><strong>Generative Art</strong> — Your emotion data becomes a painting. Joy rises as warm gold. Sadness flows as cool blue. Anger bursts in crimson. The result is a beautiful, unique artwork inspired by one of 9 Impressionist masters.</li>
+                </ol>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                <div>
+                  <h4 style={{ fontSize: 12, fontWeight: 700, color: '#2C2A26', marginBottom: 8, textTransform: 'uppercase', letterSpacing: 1 }}>
+                    The Three Dimensions
+                  </h4>
+                  <div style={{ fontSize: 12, color: '#5A5650', lineHeight: 1.8 }}>
+                    <div style={{ marginBottom: 8 }}>
+                      <strong style={{ color: '#E8B931' }}>Valence:</strong> How positive or negative you felt. High = joyful; Low = sad.
+                    </div>
+                    <div style={{ marginBottom: 8 }}>
+                      <strong style={{ color: '#6B8DAE' }}>Arousal:</strong> How activated or calm you were. High = excited/anxious; Low = peaceful/sluggish.
+                    </div>
+                    <div>
+                      <strong style={{ color: '#C4614E' }}>Stress:</strong> Overall tension level derived from fear, anger, and sadness signals.
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <h4 style={{ fontSize: 12, fontWeight: 700, color: '#2C2A26', marginBottom: 8, textTransform: 'uppercase', letterSpacing: 1 }}>
+                    Privacy & Accuracy
+                  </h4>
+                  <div style={{ fontSize: 12, color: '#5A5650', lineHeight: 1.8 }}>
+                    <div style={{ marginBottom: 8 }}>
+                      ✓ <strong>100% local processing</strong> — No video leaves your device
+                    </div>
+                    <div style={{ marginBottom: 8 }}>
+                      ✓ <strong>No cloud storage</strong> — Only you see your data
+                    </div>
+                    <div>
+                      ✓ <strong>Probabilistic, not diagnostic</strong> — For self-awareness, not medical use
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <p style={{ fontSize: 11, color: '#B0A99E', fontStyle: 'italic', marginTop: 16, lineHeight: 1.6 }}>
+                Your emotional fingerprint is a window into your inner world. Use it to reflect, understand patterns, and cultivate self-awareness.
+                Every emotion is valid. Every moment counts.
+              </p>
+            </div>
+          )}
         </div>
       )}
     </div>
