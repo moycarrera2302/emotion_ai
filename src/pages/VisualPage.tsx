@@ -109,37 +109,25 @@ export function VisualPage() {
               </div>
             )}
 
-            {/* Live emotion pill overlay (top-left) */}
+            {/* Live emotion pill overlay (top-left) - minimal */}
             {isLive && latestFrame && (
               <div style={{
                 position: 'absolute', top: 14, left: 14,
                 display: 'flex', alignItems: 'center', gap: 8,
-                background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(8px)',
+                background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(8px)',
                 borderRadius: 20, padding: '6px 14px',
               }}>
                 <span style={{
-                  width: 7, height: 7, borderRadius: '50%',
-                  background: '#6BAE7A', animation: 'pulse 2s infinite',
+                  width: 6, height: 6, borderRadius: '50%',
+                  background: '#6BAE7A',
                 }} />
-                <span style={{ fontSize: 12, fontWeight: 600, color: '#fff', textTransform: 'capitalize' }}>
+                <span style={{ fontSize: 12, fontWeight: 500, color: 'rgba(255,255,255,0.8)', textTransform: 'capitalize' }}>
                   {latestFrame.dominant_emotion}
-                </span>
-                <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)' }}>
-                  {Math.round(latestFrame.confidence * 100)}%
                 </span>
               </div>
             )}
 
-            {/* Frame counter (bottom-right) */}
-            {isLive && (
-              <div style={{
-                position: 'absolute', bottom: 14, right: 14,
-                background: 'rgba(0,0,0,0.45)', borderRadius: 8, padding: '4px 10px',
-                fontSize: 11, color: 'rgba(255,255,255,0.5)',
-              }}>
-                {session.frames.length} frames
-              </div>
-            )}
+
           </div>
 
           {/* Camera controls */}
@@ -173,8 +161,7 @@ export function VisualPage() {
               textAlign: 'center', fontSize: 13, color: '#B0A99E', marginTop: 14,
               fontStyle: 'italic', lineHeight: 1.5,
             }}>
-              Let yourself feel. Smile, think, wonder — your face tells a story
-              only you can create. Every expression becomes part of your unique painting.
+              Be present. Feel what comes. No need to perform for the camera.
             </p>
           )}
         </div>
@@ -191,17 +178,14 @@ export function VisualPage() {
                   .sort((a, b) => b[1] - a[1])
                   .map(([emotion, value]) => (
                     <div key={emotion}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}>
+                      <div style={{ marginBottom: 3 }}>
                         <span style={{ fontSize: 12, color: '#5A5650', textTransform: 'capitalize' }}>{emotion}</span>
-                        <span style={{ fontSize: 11, fontWeight: 600, color: EMOTION_COLORS[emotion] }}>
-                          {Math.round(value * 100)}%
-                        </span>
                       </div>
                       <div style={{ height: 6, borderRadius: 3, background: '#F0EDE8', overflow: 'hidden' }}>
                         <div style={{
                           height: '100%', borderRadius: 3, width: `${value * 100}%`,
                           background: EMOTION_COLORS[emotion],
-                          transition: 'width 0.5s ease',
+                          transition: 'width 1.5s ease-out',
                         }} />
                       </div>
                     </div>
@@ -295,14 +279,11 @@ function DimBar({ label, value, isStress }: { label: string; value: number; isSt
     : (value >= 0 ? '#6BAE7A' : '#C4614E');
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}>
+      <div style={{ marginBottom: 3 }}>
         <span style={{ fontSize: 11, color: '#7A756B' }}>{label}</span>
-        <span style={{ fontSize: 11, fontWeight: 600, color }}>
-          {isStress ? `${Math.round(value * 100)}%` : `${value >= 0 ? '+' : ''}${value.toFixed(2)}`}
-        </span>
       </div>
       <div style={{ height: 4, borderRadius: 2, background: '#F0EDE8', overflow: 'hidden' }}>
-        <div style={{ height: '100%', borderRadius: 2, width: `${normalized * 100}%`, background: color, transition: 'width 0.5s ease' }} />
+        <div style={{ height: '100%', borderRadius: 2, width: `${normalized * 100}%`, background: color, transition: 'width 1.5s ease-out' }} />
       </div>
     </div>
   );
