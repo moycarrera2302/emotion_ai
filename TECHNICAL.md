@@ -74,7 +74,6 @@ Result:   User's true emotions shine, not overshadowed by neutral bias
 Beyond the 7 discrete emotions, we compute:
 - **Valence** (-1 to +1): Negative ↔ Positive
 - **Arousal** (-1 to +1): Calm ↔ Excited
-- **Dominance** (-1 to +1): Submissive ↔ Controlling
 - **Stress Level** (0 to 1): Composite of fear + anger + sadness
 
 ---
