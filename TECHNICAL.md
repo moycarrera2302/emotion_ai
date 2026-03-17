@@ -366,7 +366,7 @@ emotion_ai/
 ## 🔮 Future Roadmap
 
 - [ ] Voice prosody analysis (pitch, energy, spectral features)
-- [ ] Wearable device integration (heart rate, skin conductance)
+- [ ] Wearable device integration (heart rate)
 - [ ] Multi-modal emotion fusion (face + voice + physiology)
 - [ ] Emotion tagging & journaling
 - [ ] Community emotion gallery (anonymized)
