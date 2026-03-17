@@ -426,53 +426,50 @@ export function TimelinePage() {
                 </div>
               </div>
 
-              {/* Spatial Dimensions */}
+              {/* Simple Visual Guide */}
               <div style={{ background: '#FDFBF8', borderRadius: 8, padding: 16, marginBottom: 20 }}>
                 <h4 style={{ fontSize: 13, fontWeight: 700, color: '#2C2A26', marginBottom: 12, textTransform: 'uppercase', letterSpacing: 1 }}>
-                  Spatial Dimensions: What Position Means
+                  How to Read the 5 Visual Elements
                 </h4>
-                <div style={{ fontSize: 13, color: '#5A5650', lineHeight: 1.8 }}>
-                  <div style={{ marginBottom: 12 }}>
-                    <strong>Vertical Axis (Top ↔ Bottom)</strong><br />
-                    Maps to <strong>Valence</strong> (positive vs. negative emotion):
-                    <ul style={{ marginTop: 6, marginBottom: 0, paddingLeft: 20 }}>
-                      <li><strong>Top:</strong> Positive emotions (joy, surprise) — uplifting, ascending</li>
-                      <li><strong>Bottom:</strong> Negative emotions (sadness, disgust) — heavy, descending</li>
-                    </ul>
+                <div style={{ fontSize: 13, color: '#5A5650', lineHeight: 2 }}>
+                  <div style={{ marginBottom: 12, paddingBottom: 12, borderBottom: '1px solid #E8E4DD' }}>
+                    <strong style={{ color: '#2C2A26', fontSize: 14 }}>1. Color</strong><br />
+                    What emotion you felt: <strong>Gold = joy, Blue = sadness, Red = anger, Purple = fear, Teal = surprise, Green = disgust</strong>
                   </div>
 
-                  <div style={{ marginBottom: 12 }}>
-                    <strong>Horizontal Spread (Left ↔ Right)</strong><br />
-                    Maps to <strong>Arousal</strong> (activation level):
-                    <ul style={{ marginTop: 6, marginBottom: 0, paddingLeft: 20 }}>
-                      <li><strong>Narrow/Dense:</strong> Low arousal (calm sadness, peaceful joy)</li>
-                      <li><strong>Wide/Dispersed:</strong> High arousal (excited joy, frantic fear, explosive anger)</li>
-                    </ul>
+                  <div style={{ marginBottom: 12, paddingBottom: 12, borderBottom: '1px solid #E8E4DD' }}>
+                    <strong style={{ color: '#2C2A26', fontSize: 14 }}>2. Brightness & Sharpness</strong><br />
+                    <strong>Bright & vivid</strong> = Recent (last 20 seconds) • <strong>Faded & ghostly</strong> = Earlier in your session
+                  </div>
+
+                  <div style={{ marginBottom: 12, paddingBottom: 12, borderBottom: '1px solid #E8E4DD' }}>
+                    <strong style={{ color: '#2C2A26', fontSize: 14 }}>3. Density & Thickness</strong><br />
+                    <strong>Dense clusters</strong> = You felt that emotion for a long time • <strong>Sparse marks</strong> = Quick, fleeting moment
+                  </div>
+
+                  <div style={{ marginBottom: 12, paddingBottom: 12, borderBottom: '1px solid #E8E4DD' }}>
+                    <strong style={{ color: '#2C2A26', fontSize: 14 }}>4. Spread & Scatter</strong><br />
+                    <strong>Tight pattern</strong> = Calm, controlled emotion • <strong>Wild, dispersed</strong> = Intense, turbulent emotion
                   </div>
 
                   <div>
-                    <strong>Depth/Opacity (Fading)</strong><br />
-                    Maps to <strong>Time</strong>:
-                    <ul style={{ marginTop: 6, marginBottom: 0, paddingLeft: 20 }}>
-                      <li><strong>Bright & Sharp:</strong> Recent emotions (last 20 seconds)</li>
-                      <li><strong>Faded & Ghostly:</strong> Older emotions (earlier in session)</li>
-                    </ul>
+                    <strong style={{ color: '#2C2A26', fontSize: 14 }}>5. The Bottom Ribbon (Most Important!)</strong><br />
+                    This is your <strong>emotional timeline</strong>. Each color block shows what you felt at each moment. <strong>This is the most accurate reading of your session.</strong>
                   </div>
                 </div>
               </div>
 
-              {/* Reading Tips */}
+              {/* Quick Examples */}
               <div style={{ background: '#FDFBF8', borderRadius: 8, padding: 16 }}>
                 <h4 style={{ fontSize: 13, fontWeight: 700, color: '#2C2A26', marginBottom: 12, textTransform: 'uppercase', letterSpacing: 1 }}>
-                  How to Read Your Painting
+                  What Your Painting Tells You
                 </h4>
                 <ul style={{ fontSize: 13, color: '#5A5650', lineHeight: 1.9, paddingLeft: 20, margin: 0 }}>
-                  <li><strong>Dense clusters?</strong> Sustained emotion — you stayed in one state for a while</li>
-                  <li><strong>Scattered, explosive patterns?</strong> Turbulent emotions — rapid shifts or high intensity</li>
-                  <li><strong>Layered fading?</strong> Complex emotional arc — you evolved through multiple states</li>
-                  <li><strong>Bottom-heavy painting?</strong> Predominantly negative valence — challenging session</li>
-                  <li><strong>Top-heavy painting?</strong> Predominantly positive valence — uplifting session</li>
-                  <li><strong>Artist style matters:</strong> Van Gogh emphasizes turbulence; Monet emphasizes subtlety; Pissarro emphasizes texture</li>
+                  <li><strong>Lots of yellow?</strong> You experienced sustained joy during your session</li>
+                  <li><strong>Scattered, wild patterns?</strong> Your emotions were turbulent or intense — rapid shifts</li>
+                  <li><strong>Layered, fading colors?</strong> Complex emotional arc — you evolved through different states</li>
+                  <li><strong>One solid color?</strong> Consistent emotion throughout — stable mood</li>
+                  <li><strong>Different artist = different look:</strong> Van Gogh shows intensity vividly; Monet softens it; Pissarro creates texture. The emotion data is the same, but each artist reveals different aesthetics.</li>
                 </ul>
               </div>
             </div>
