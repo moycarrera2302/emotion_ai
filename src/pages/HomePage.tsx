@@ -129,7 +129,7 @@ export function HomePage() {
       <section id="how-it-works" style={{ padding: '80px 24px 120px', background: '#F8F5F0' }}>
         <div style={{ maxWidth: 1000, margin: '0 auto' }}>
           <p className="reveal" style={sectionTag}>How it works</p>
-          <h2 className="reveal" style={sectionTitle}>Three layers of emotional intelligence</h2>
+          <h2 className="reveal" style={sectionTitle}>Two layers of emotional intelligence</h2>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 32, marginTop: 56 }}>
             {[
